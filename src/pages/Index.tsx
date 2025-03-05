@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateActualTotalTime, calculateTotalTime, formatTime } from "@/lib/timeUtils";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
   const [tasks, setTasks] = useState<Task[]>(() => {
@@ -52,6 +53,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
       <div className="container mx-auto py-8 px-4 max-w-5xl">
+        <div className="flex justify-end mb-4">
+          <ThemeToggle />
+        </div>
+        
         <div className="text-center mb-10 animate-slide-down">
           <h1 className="text-4xl font-bold tracking-tight">Today</h1>
           <p className="text-muted-foreground mt-2">
@@ -60,7 +65,7 @@ const Index = () => {
         </div>
 
         {tasks.length > 0 && (
-          <div className="mb-8 p-6 rounded-xl glass animate-fade-in">
+          <div className="mb-8 p-6 rounded-xl glass dark:glass-dark animate-fade-in">
             <div className="flex flex-col md:flex-row justify-between gap-6">
               <div className="space-y-1 flex-1">
                 <h3 className="text-sm font-medium">Tasks Planned</h3>
