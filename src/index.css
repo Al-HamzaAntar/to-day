@@ -129,6 +129,19 @@
   --tw-space-x-reverse: 1;
 }
 
+[dir="rtl"] .ml-3 {
+  margin-left: 0;
+  margin-right: 0.75rem;
+}
+
+[dir="rtl"] .order-first {
+  order: 2;
+}
+
+[dir="rtl"] .order-last {
+  order: 1;
+}
+
 @font-face {
   font-family: 'Tajawal';
   src: url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');

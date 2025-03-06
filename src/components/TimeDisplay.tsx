@@ -84,7 +84,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
         <h3 className="font-medium text-sm mb-2">{t("time.breakdown")}</h3>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {tasks.map((task) => (
-            <div key={task.id} className="flex items-center gap-2">
+            <div key={task.id} className={`flex items-center gap-2 ${language === "ar" ? "flex-row-reverse" : ""}`}>
               <div
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: task.color }}

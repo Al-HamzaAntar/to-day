@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Task } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -78,8 +79,8 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                 />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex justify-between items-center">
-                    <span className="truncate">{task.name}</span>
-                    <span className="text-xs font-normal bg-secondary px-2 py-1 rounded-full">
+                    <span className={`truncate ${language === "ar" ? "order-last" : "order-first"}`}>{task.name}</span>
+                    <span className={`text-xs font-normal bg-secondary px-2 py-1 rounded-full ${language === "ar" ? "order-first" : "order-last"}`}>
                       {t("taskTracker.plan")} {formatTimeWithLocale(task.plannedHours, task.plannedMinutes)}
                     </span>
                   </CardTitle>
@@ -119,7 +120,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <div className="flex justify-between text-sm">
+                      <div className={`flex justify-between text-sm ${language === "ar" ? "flex-row-reverse" : ""}`}>
                         <span className="text-muted-foreground">{t("taskTracker.actual")}</span>
                         <span>
                           {completed
@@ -140,7 +141,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                         </div>
                       )}
                       
-                      <div className="flex justify-between text-sm">
+                      <div className={`flex justify-between text-sm ${language === "ar" ? "flex-row-reverse" : ""}`}>
                         <span className="text-muted-foreground">{t("taskTracker.remaining")}</span>
                         <span>
                           {completed

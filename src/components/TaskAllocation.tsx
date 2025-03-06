@@ -162,9 +162,9 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
                 key={task.id}
                 className="flex justify-between items-center p-3 rounded-md bg-secondary/50 hover:bg-secondary/80 transition-colors"
               >
-                <div className="flex items-center">
+                <div className={`flex items-center ${language === "ar" ? "flex-row-reverse" : ""}`}>
                   <div
-                    className="w-3 h-3 rounded-full mr-3"
+                    className={`w-3 h-3 rounded-full ${language === "ar" ? "ml-3" : "mr-3"}`}
                     style={{ backgroundColor: task.color }}
                   />
                   <span className="font-medium">{task.name}</span>
