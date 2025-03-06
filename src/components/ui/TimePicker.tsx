@@ -8,6 +8,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { TimeUnit } from "@/types";
+import { useLanguage } from "../LanguageProvider";
 
 interface TimePickerProps {
   value: number;
@@ -24,6 +25,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
   max = unit === "hours" ? 24 : 59,
   disabled = false
 }) => {
+  const { language } = useLanguage();
   const [internalValue, setInternalValue] = useState<number>(value);
 
   useEffect(() => {
@@ -34,6 +36,19 @@ const TimePicker: React.FC<TimePickerProps> = ({
     const numValue = parseInt(newValue, 10);
     setInternalValue(numValue);
     onChange(numValue);
+  };
+
+  const getUnitLabel = (unit: TimeUnit, value: number) => {
+    if (language === "en") {
+      return `${value} ${unit === "hours" ? (value === 1 ? "hour" : "hours") : (value === 1 ? "minute" : "minutes")}`;
+    } else {
+      // Arabic labels
+      if (unit === "hours") {
+        return `${value} ${value === 1 ? "ساعة" : value === 2 ? "ساعتان" : "ساعات"}`;
+      } else {
+        return `${value} ${value === 1 ? "دقيقة" : value === 2 ? "دقيقتان" : "دقائق"}`;
+      }
+    }
   };
 
   return (
@@ -53,7 +68,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
               value={i.toString()}
               className="cursor-pointer"
             >
-              {i} {unit === "hours" ? (i === 1 ? "hour" : "hours") : (i === 1 ? "minute" : "minutes")}
+              {getUnitLabel(unit, i)}
             </SelectItem>
           ))}
         </SelectContent>

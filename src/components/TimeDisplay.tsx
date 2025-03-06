@@ -2,12 +2,14 @@
 import React from "react";
 import { Task } from "@/types";
 import { calculateTotalTime, formatTime } from "@/lib/timeUtils";
+import { useLanguage } from "./LanguageProvider";
 
 interface TimeDisplayProps {
   tasks: Task[];
 }
 
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
+  const { t } = useLanguage();
   const totalTime = calculateTotalTime(tasks);
   const totalHours = totalTime.hours;
   const totalMinutes = totalTime.minutes;
@@ -22,7 +24,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
 
   return (
     <div className="mb-8 w-full animate-fade-in">
-      <h2 className="text-xl font-semibold mb-2">Time Allocation</h2>
+      <h2 className="text-xl font-semibold mb-2">{t("time.allocation")}</h2>
       <div className="w-full h-6 bg-secondary rounded-full overflow-hidden">
         {tasks.map((task, index) => {
           const widthPercent = ((task.plannedHours * 60 + task.plannedMinutes) / (24 * 60)) * 100;
@@ -42,11 +44,11 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
       
       <div className="flex items-center justify-between mt-4">
         <div className="text-sm">
-          <span className="font-medium">Used: </span>
+          <span className="font-medium">{t("time.used")} </span>
           <span>{formatTime(totalHours, totalMinutes)}</span>
         </div>
         <div className="text-sm">
-          <span className="font-medium">Remaining: </span>
+          <span className="font-medium">{t("time.remaining")} </span>
           <span>
             {formatTime(
               adjustedRemainingHours < 0 ? 0 : adjustedRemainingHours,
@@ -55,13 +57,13 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
           </span>
         </div>
         <div className="text-sm">
-          <span className="font-medium">Total: </span>
+          <span className="font-medium">{t("time.total")} </span>
           <span>24h 00m</span>
         </div>
       </div>
 
       <div className="mt-6">
-        <h3 className="font-medium text-sm mb-2">Task Breakdown</h3>
+        <h3 className="font-medium text-sm mb-2">{t("time.breakdown")}</h3>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {tasks.map((task) => (
             <div key={task.id} className="flex items-center gap-2">

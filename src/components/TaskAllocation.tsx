@@ -7,6 +7,7 @@ import TimePicker from "@/components/ui/TimePicker";
 import { X } from "lucide-react";
 import { calculateTotalTime, getRandomColor, validateTotalTime } from "@/lib/timeUtils";
 import { toast } from "sonner";
+import { useLanguage } from "./LanguageProvider";
 
 interface TaskAllocationProps {
   tasks: Task[];
@@ -19,18 +20,19 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
   onAddTask,
   onRemoveTask,
 }) => {
+  const { t } = useLanguage();
   const [taskName, setTaskName] = useState("");
   const [hours, setHours] = useState(1);
   const [minutes, setMinutes] = useState(0);
 
   const handleAddTask = () => {
     if (!taskName.trim()) {
-      toast.error("Task name cannot be empty");
+      toast.error(t("toast.error.emptyName"));
       return;
     }
 
     if (hours === 0 && minutes === 0) {
-      toast.error("Task duration must be greater than 0");
+      toast.error(t("toast.error.zeroDuration"));
       return;
     }
 
@@ -47,7 +49,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
     const tasksWithNewTask = [...tasks, newTask];
     
     if (!validateTotalTime(tasksWithNewTask)) {
-      toast.error("Total time cannot exceed 24 hours");
+      toast.error(t("toast.error.exceed24"));
       return;
     }
 
@@ -67,14 +69,14 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <h2 className="text-xl font-semibold">Allocate Your 24 Hours</h2>
+      <h2 className="text-xl font-semibold">{t("taskAllocation.title")}</h2>
       
       <div className="p-5 rounded-lg glass">
         <div className="flex flex-col space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
             <div className="md:col-span-2">
               <label htmlFor="task-name" className="text-sm font-medium mb-1.5 block">
-                Task Name
+                {t("taskAllocation.taskName")}
               </label>
               <Input
                 id="task-name"
@@ -88,7 +90,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
             <div className="flex space-x-2 items-end">
               <div>
                 <label htmlFor="hours" className="text-sm font-medium mb-1.5 block">
-                  Hours
+                  {t("taskAllocation.hours")}
                 </label>
                 <TimePicker
                   value={hours}
@@ -99,7 +101,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
               
               <div>
                 <label htmlFor="minutes" className="text-sm font-medium mb-1.5 block">
-                  Minutes
+                  {t("taskAllocation.minutes")}
                 </label>
                 <TimePicker
                   value={minutes}
@@ -114,15 +116,15 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
                 onClick={handleAddTask} 
                 className="w-full"
               >
-                Add Task
+                {t("taskAllocation.addTask")}
               </Button>
             </div>
           </div>
           
           <div className="text-sm mt-2">
-            <span className="font-medium">Time Left: </span>
+            <span className="font-medium">{t("taskAllocation.timeLeft")} </span>
             <span className={timeLeft.hours < 0 ? "text-destructive" : ""}>
-              {timeLeft.hours < 0 ? "Exceeded by " : ""}
+              {timeLeft.hours < 0 ? t("taskAllocation.exceededBy") + " " : ""}
               {Math.abs(timeLeft.hours)}h {timeLeft.minutes}m
             </span>
           </div>
@@ -131,7 +133,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
 
       {tasks.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-lg font-medium">Your Tasks</h3>
+          <h3 className="text-lg font-medium">{t("taskAllocation.yourTasks")}</h3>
           <div className="space-y-2">
             {tasks.map((task) => (
               <div
