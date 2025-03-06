@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Task } from "@/types";
-import { calculateTotalTime, formatTime } from "@/lib/timeUtils";
+import { calculateTotalTime, formatTime, formatTimeArabic } from "@/lib/timeUtils";
 import { useLanguage } from "./LanguageProvider";
 
 interface TimeDisplayProps {
@@ -30,10 +30,12 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
     );
   };
 
-  // Format time with Arabic numerals if needed
+  // Format time with Arabic numerals and units if needed
   const formatTimeWithLocale = (hours: number, minutes: number): string => {
     if (language === "ar") {
-      return `${toArabicDigits(hours)}h ${toArabicDigits(minutes)}m`;
+      const arabicHours = toArabicDigits(hours);
+      const arabicMinutes = toArabicDigits(minutes < 10 ? `0${minutes}` : minutes);
+      return `${arabicHours}س ${arabicMinutes}د`;
     }
     return formatTime(hours, minutes);
   };
@@ -74,7 +76,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
         </div>
         <div className="text-sm">
           <span className="font-medium">{t("time.total")} </span>
-          <span>{language === "ar" ? `${toArabicDigits(24)}h ${toArabicDigits(0)}m` : "24h 00m"}</span>
+          <span>{language === "ar" ? `${toArabicDigits(24)}س ${toArabicDigits(0)}د` : "24h 00m"}</span>
         </div>
       </div>
 

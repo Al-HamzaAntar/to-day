@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Task } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +28,6 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
     setActiveTaskId(null);
   };
 
-  // Convert western digits to Arabic digits
   const toArabicDigits = (num: number): string => {
     if (language !== "ar") return num.toString();
     return num.toString().replace(/\d/g, d => 
@@ -37,10 +35,11 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
     );
   };
 
-  // Format time with Arabic numerals if needed
   const formatTimeWithLocale = (hours: number, minutes: number): string => {
     if (language === "ar") {
-      return `${toArabicDigits(hours)}h ${toArabicDigits(minutes)}m`;
+      const arabicHours = toArabicDigits(hours);
+      const arabicMinutes = toArabicDigits(minutes < 10 ? `0${minutes}` : minutes);
+      return `${arabicHours}س ${arabicMinutes}د`;
     }
     return formatTime(hours, minutes);
   };
@@ -81,9 +80,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                   <CardTitle className="text-base flex justify-between items-center">
                     <span className="truncate">{task.name}</span>
                     <span className="text-xs font-normal bg-secondary px-2 py-1 rounded-full">
-                      {t("taskTracker.plan")} {language === "ar" 
-                        ? `${toArabicDigits(task.plannedHours)}h ${toArabicDigits(task.plannedMinutes)}m`
-                        : `${task.plannedHours}h ${task.plannedMinutes}m`}
+                      {t("taskTracker.plan")} {formatTimeWithLocale(task.plannedHours, task.plannedMinutes)}
                     </span>
                   </CardTitle>
                 </CardHeader>
@@ -126,9 +123,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                         <span className="text-muted-foreground">{t("taskTracker.actual")}</span>
                         <span>
                           {completed
-                            ? language === "ar" 
-                              ? `${toArabicDigits(task.actualHours!)}h ${toArabicDigits(task.actualMinutes!)}m`
-                              : `${task.actualHours}h ${task.actualMinutes}m`
+                            ? formatTimeWithLocale(task.actualHours!, task.actualMinutes!)
                             : t("taskTracker.notTracked")}
                         </span>
                       </div>

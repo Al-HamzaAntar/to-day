@@ -82,6 +82,13 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
     return "e.g., Sleep, Work, Exercise...";
   };
 
+  const formatTimeDisplay = (hours: number, minutes: number) => {
+    if (language === "ar") {
+      return `${toArabicDigits(hours)}س ${toArabicDigits(minutes)}د`;
+    }
+    return `${hours}h ${minutes}m`;
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <h2 className="text-xl font-semibold">{t("taskAllocation.title")}</h2>
@@ -140,7 +147,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
             <span className="font-medium">{t("taskAllocation.timeLeft")} </span>
             <span className={timeLeft.hours < 0 ? "text-destructive" : ""}>
               {timeLeft.hours < 0 ? t("taskAllocation.exceededBy") + " " : ""}
-              {language === "ar" ? toArabicDigits(Math.abs(timeLeft.hours)) : Math.abs(timeLeft.hours)}h {language === "ar" ? toArabicDigits(timeLeft.minutes) : timeLeft.minutes}m
+              {formatTimeDisplay(Math.abs(timeLeft.hours), timeLeft.minutes)}
             </span>
           </div>
         </div>
@@ -164,9 +171,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-sm">
-                    {language === "ar" 
-                      ? `${toArabicDigits(task.plannedHours)}h ${toArabicDigits(task.plannedMinutes)}m` 
-                      : `${task.plannedHours}h ${task.plannedMinutes}m`}
+                    {formatTimeDisplay(task.plannedHours, task.plannedMinutes)}
                   </span>
                   <Button
                     variant="ghost"
