@@ -9,7 +9,7 @@ interface TimeDisplayProps {
 }
 
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const totalTime = calculateTotalTime(tasks);
   const totalHours = totalTime.hours;
   const totalMinutes = totalTime.minutes;
@@ -21,6 +21,22 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
   const adjustedRemainingHours = totalMinutes > 0 ? remainingHours - 1 : remainingHours;
   
   const timeUsedPercentage = ((totalHours * 60 + totalMinutes) / (24 * 60)) * 100;
+
+  // Convert western digits to Arabic digits
+  const toArabicDigits = (num: number): string => {
+    if (language !== "ar") return num.toString();
+    return num.toString().replace(/\d/g, d => 
+      String.fromCharCode(1632 + parseInt(d, 10))
+    );
+  };
+
+  // Format time with Arabic numerals if needed
+  const formatTimeWithLocale = (hours: number, minutes: number): string => {
+    if (language === "ar") {
+      return `${toArabicDigits(hours)}h ${toArabicDigits(minutes)}m`;
+    }
+    return formatTime(hours, minutes);
+  };
 
   return (
     <div className="mb-8 w-full animate-fade-in">
@@ -36,7 +52,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
                 width: `${widthPercent}%`,
                 backgroundColor: task.color,
               }}
-              title={`${task.name}: ${task.plannedHours}h ${task.plannedMinutes}m`}
+              title={`${task.name}: ${formatTimeWithLocale(task.plannedHours, task.plannedMinutes)}`}
             />
           );
         })}
@@ -45,12 +61,12 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
       <div className="flex items-center justify-between mt-4">
         <div className="text-sm">
           <span className="font-medium">{t("time.used")} </span>
-          <span>{formatTime(totalHours, totalMinutes)}</span>
+          <span>{formatTimeWithLocale(totalHours, totalMinutes)}</span>
         </div>
         <div className="text-sm">
           <span className="font-medium">{t("time.remaining")} </span>
           <span>
-            {formatTime(
+            {formatTimeWithLocale(
               adjustedRemainingHours < 0 ? 0 : adjustedRemainingHours,
               remainingMinutes
             )}
@@ -58,7 +74,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
         </div>
         <div className="text-sm">
           <span className="font-medium">{t("time.total")} </span>
-          <span>24h 00m</span>
+          <span>{language === "ar" ? `${toArabicDigits(24)}h ${toArabicDigits(0)}m` : "24h 00m"}</span>
         </div>
       </div>
 

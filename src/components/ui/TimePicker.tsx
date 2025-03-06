@@ -38,15 +38,25 @@ const TimePicker: React.FC<TimePickerProps> = ({
     onChange(numValue);
   };
 
+  // Convert western digits to Arabic digits
+  const toArabicDigits = (num: number): string => {
+    if (language !== "ar") return num.toString();
+    return num.toString().replace(/\d/g, d => 
+      String.fromCharCode(1632 + parseInt(d, 10))
+    );
+  };
+
   const getUnitLabel = (unit: TimeUnit, value: number) => {
+    const valueStr = toArabicDigits(value);
+    
     if (language === "en") {
       return `${value} ${unit === "hours" ? (value === 1 ? "hour" : "hours") : (value === 1 ? "minute" : "minutes")}`;
     } else {
       // Arabic labels
       if (unit === "hours") {
-        return `${value} ${value === 1 ? "ساعة" : value === 2 ? "ساعتان" : "ساعات"}`;
+        return `${valueStr} ${value === 1 ? "ساعة" : value === 2 ? "ساعتان" : "ساعات"}`;
       } else {
-        return `${value} ${value === 1 ? "دقيقة" : value === 2 ? "دقيقتان" : "دقائق"}`;
+        return `${valueStr} ${value === 1 ? "دقيقة" : value === 2 ? "دقيقتان" : "دقائق"}`;
       }
     }
   };
@@ -59,7 +69,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
         disabled={disabled}
       >
         <SelectTrigger className="w-full focus:ring-1 focus:ring-primary/20">
-          <SelectValue placeholder={`0 ${unit}`} />
+          <SelectValue placeholder={`${language === "ar" ? toArabicDigits(0) : "0"} ${unit}`} />
         </SelectTrigger>
         <SelectContent className="max-h-[240px]">
           {Array.from({ length: max + 1 }, (_, i) => (

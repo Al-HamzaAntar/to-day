@@ -20,7 +20,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
   onAddTask,
   onRemoveTask,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [taskName, setTaskName] = useState("");
   const [hours, setHours] = useState(1);
   const [minutes, setMinutes] = useState(0);
@@ -59,12 +59,27 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
     setMinutes(0);
   };
 
+  // Convert western digits to Arabic digits
+  const toArabicDigits = (num: number): string => {
+    if (language !== "ar") return num.toString();
+    return num.toString().replace(/\d/g, d => 
+      String.fromCharCode(1632 + parseInt(d, 10))
+    );
+  };
+
   const totalTime = calculateTotalTime(tasks);
   const totalHours = totalTime.hours;
   const totalMinutes = totalTime.minutes;
   const timeLeft = {
     hours: 24 - totalHours - (totalMinutes > 0 ? 1 : 0),
     minutes: totalMinutes > 0 ? 60 - totalMinutes : 0,
+  };
+
+  const getPlaceholder = () => {
+    if (language === "ar") {
+      return "مثال: النوم، العمل، الرياضة...";
+    }
+    return "e.g., Sleep, Work, Exercise...";
   };
 
   return (
@@ -82,7 +97,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
                 id="task-name"
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
-                placeholder="e.g., Sleep, Work, Exercise..."
+                placeholder={getPlaceholder()}
                 className="w-full"
               />
             </div>
@@ -125,7 +140,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
             <span className="font-medium">{t("taskAllocation.timeLeft")} </span>
             <span className={timeLeft.hours < 0 ? "text-destructive" : ""}>
               {timeLeft.hours < 0 ? t("taskAllocation.exceededBy") + " " : ""}
-              {Math.abs(timeLeft.hours)}h {timeLeft.minutes}m
+              {language === "ar" ? toArabicDigits(Math.abs(timeLeft.hours)) : Math.abs(timeLeft.hours)}h {language === "ar" ? toArabicDigits(timeLeft.minutes) : timeLeft.minutes}m
             </span>
           </div>
         </div>
@@ -149,7 +164,9 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-sm">
-                    {task.plannedHours}h {task.plannedMinutes}m
+                    {language === "ar" 
+                      ? `${toArabicDigits(task.plannedHours)}h ${toArabicDigits(task.plannedMinutes)}m` 
+                      : `${task.plannedHours}h ${task.plannedMinutes}m`}
                   </span>
                   <Button
                     variant="ghost"

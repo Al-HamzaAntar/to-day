@@ -13,7 +13,7 @@ interface TaskTrackerProps {
 }
 
 const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const [actualHours, setActualHours] = useState<number>(0);
   const [actualMinutes, setActualMinutes] = useState<number>(0);
@@ -27,6 +27,22 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
   const handleSave = (taskId: string) => {
     onUpdateActualTime(taskId, actualHours, actualMinutes);
     setActiveTaskId(null);
+  };
+
+  // Convert western digits to Arabic digits
+  const toArabicDigits = (num: number): string => {
+    if (language !== "ar") return num.toString();
+    return num.toString().replace(/\d/g, d => 
+      String.fromCharCode(1632 + parseInt(d, 10))
+    );
+  };
+
+  // Format time with Arabic numerals if needed
+  const formatTimeWithLocale = (hours: number, minutes: number): string => {
+    if (language === "ar") {
+      return `${toArabicDigits(hours)}h ${toArabicDigits(minutes)}m`;
+    }
+    return formatTime(hours, minutes);
   };
 
   return (
@@ -65,7 +81,9 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                   <CardTitle className="text-base flex justify-between items-center">
                     <span className="truncate">{task.name}</span>
                     <span className="text-xs font-normal bg-secondary px-2 py-1 rounded-full">
-                      {t("taskTracker.plan")} {task.plannedHours}h {task.plannedMinutes}m
+                      {t("taskTracker.plan")} {language === "ar" 
+                        ? `${toArabicDigits(task.plannedHours)}h ${toArabicDigits(task.plannedMinutes)}m`
+                        : `${task.plannedHours}h ${task.plannedMinutes}m`}
                     </span>
                   </CardTitle>
                 </CardHeader>
@@ -108,7 +126,9 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                         <span className="text-muted-foreground">{t("taskTracker.actual")}</span>
                         <span>
                           {completed
-                            ? `${task.actualHours}h ${task.actualMinutes}m`
+                            ? language === "ar" 
+                              ? `${toArabicDigits(task.actualHours!)}h ${toArabicDigits(task.actualMinutes!)}m`
+                              : `${task.actualHours}h ${task.actualMinutes}m`
                             : t("taskTracker.notTracked")}
                         </span>
                       </div>
@@ -129,7 +149,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                         <span className="text-muted-foreground">{t("taskTracker.remaining")}</span>
                         <span>
                           {completed
-                            ? formatTime(remainingTime.hours, remainingTime.minutes)
+                            ? formatTimeWithLocale(remainingTime.hours, remainingTime.minutes)
                             : "-"}
                         </span>
                       </div>
