@@ -26,9 +26,9 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
   
   // Calculate completion percentage based on actual time vs planned time
   const totalPlannedMinutes = totalHours * 60 + totalMinutes;
-  const totalActualMinutes = totalActualHours * 60 + totalActualMinutes;
+  const actualMinutesTotal = totalActualHours * 60 + totalActualMinutes;
   const completionPercentage = totalPlannedMinutes > 0 
-    ? Math.min(100, (totalActualMinutes / totalPlannedMinutes) * 100) 
+    ? Math.min(100, (actualMinutesTotal / totalPlannedMinutes) * 100) 
     : 0;
 
   // Convert western digits to Arabic digits

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type Language = "en" | "ar";
@@ -24,6 +23,7 @@ const resources = {
     "time.remaining": "Remaining:",
     "time.total": "Total:",
     "time.breakdown": "Task Breakdown",
+    "time.completion": "Completion",
     
     // Dashboard
     "dashboard.tasksPlanned": "Tasks Planned",
@@ -83,6 +83,7 @@ const resources = {
     "time.remaining": "متبقي:",
     "time.total": "المجموع:",
     "time.breakdown": "تفاصيل المهام",
+    "time.completion": "الإنجاز",
     
     // Dashboard
     "dashboard.tasksPlanned": "المهام المخططة",
