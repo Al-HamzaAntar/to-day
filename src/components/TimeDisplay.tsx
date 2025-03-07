@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Task } from "@/types";
-import { calculateTotalTime, formatTime } from "@/lib/timeUtils";
+import { calculateTotalTime, calculateActualTotalTime, formatTime } from "@/lib/timeUtils";
 import { useLanguage } from "./LanguageProvider";
 
 interface TimeDisplayProps {
@@ -14,13 +14,22 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
   const totalHours = totalTime.hours;
   const totalMinutes = totalTime.minutes;
   
+  const totalActualTime = calculateActualTotalTime(tasks);
+  const totalActualHours = totalActualTime.hours;
+  const totalActualMinutes = totalActualTime.minutes;
+  
   const remainingHours = 24 - totalHours;
   const remainingMinutes = totalMinutes > 0 ? 60 - totalMinutes : 0;
   
   // Adjust remaining hours if we borrowed minutes
   const adjustedRemainingHours = totalMinutes > 0 ? remainingHours - 1 : remainingHours;
   
-  const timeUsedPercentage = ((totalHours * 60 + totalMinutes) / (24 * 60)) * 100;
+  // Calculate completion percentage based on actual time vs planned time
+  const totalPlannedMinutes = totalHours * 60 + totalMinutes;
+  const totalActualMinutes = totalActualHours * 60 + totalActualMinutes;
+  const completionPercentage = totalPlannedMinutes > 0 
+    ? Math.min(100, (totalActualMinutes / totalPlannedMinutes) * 100) 
+    : 0;
 
   // Convert western digits to Arabic digits
   const toArabicDigits = (num: number): string => {
@@ -77,6 +86,22 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
         <div className="text-sm">
           <span className="font-medium">{t("time.total")} </span>
           <span>{language === "ar" ? `${toArabicDigits(24)}س ${toArabicDigits(0)}د` : "24h 00m"}</span>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2 mt-4">
+        <div className="flex justify-between items-center">
+          <h3 className="font-medium text-sm">{t("time.completion")}</h3>
+          <span className="text-sm font-medium">{Math.round(completionPercentage)}%</span>
+        </div>
+        <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+          <div
+            className="h-full transition-all duration-300 ease-in-out"
+            style={{
+              width: `${completionPercentage}%`,
+              backgroundColor: "hsl(var(--primary))",
+            }}
+          />
         </div>
       </div>
 

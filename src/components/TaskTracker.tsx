@@ -118,7 +118,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                           </label>
                           <TimePicker
                             value={additionalHours}
-                            onChange={(value: number) => setAdditionalHours(value)}
+                            onChange={(value) => setAdditionalHours(Number(value))}
                             unit="hours"
                           />
                         </div>
@@ -128,7 +128,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                           </label>
                           <TimePicker
                             value={additionalMinutes}
-                            onChange={(value: number) => setAdditionalMinutes(value)}
+                            onChange={(value) => setAdditionalMinutes(Number(value))}
                             unit="minutes"
                           />
                         </div>
