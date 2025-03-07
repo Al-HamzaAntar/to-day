@@ -11,6 +11,19 @@ import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useLanguage } from "@/components/LanguageProvider";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Index = () => {
   const { t, language } = useLanguage();
@@ -46,6 +59,12 @@ const Index = () => {
     toast.success(t("toast.timeUpdated"));
   };
 
+  const resetAllData = () => {
+    setTasks([]);
+    localStorage.removeItem("today-tasks");
+    toast.success(t("toast.dataCleared"));
+  };
+
   const totalPlannedTime = calculateTotalTime(tasks);
   const totalActualTime = calculateActualTotalTime(tasks);
   
@@ -56,9 +75,31 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
       <div className={`container mx-auto py-8 px-4 max-w-5xl ${language === 'ar' ? 'font-arabic' : ''}`}>
-        <div className="flex justify-end mb-4 gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
+        <div className="flex justify-between mb-4 gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="icon" className="rounded-full">
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("reset.title")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("reset.description")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("reset.cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={resetAllData}>{t("reset.confirm")}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          
+          <div className="flex gap-2">
+            <LanguageToggle />
+            <ThemeToggle />
+          </div>
         </div>
         
         <div className="text-center mb-10 animate-slide-down">
