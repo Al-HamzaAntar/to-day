@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Task } from "@/types";
-import { calculateTotalTime, formatTime, formatTimeArabic } from "@/lib/timeUtils";
+import { calculateTotalTime, formatTime } from "@/lib/timeUtils";
 import { useLanguage } from "./LanguageProvider";
 
 interface TimeDisplayProps {

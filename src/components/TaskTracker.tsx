@@ -15,17 +15,34 @@ interface TaskTrackerProps {
 const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) => {
   const { t, language } = useLanguage();
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
-  const [actualHours, setActualHours] = useState<number>(0);
-  const [actualMinutes, setActualMinutes] = useState<number>(0);
+  const [additionalHours, setAdditionalHours] = useState<number>(0);
+  const [additionalMinutes, setAdditionalMinutes] = useState<number>(0);
 
   const handleEdit = (task: Task) => {
     setActiveTaskId(task.id);
-    setActualHours(task.actualHours !== null ? task.actualHours : 0);
-    setActualMinutes(task.actualMinutes !== null ? task.actualMinutes : 0);
+    // Reset to 0 when editing to indicate we're adding time
+    setAdditionalHours(0);
+    setAdditionalMinutes(0);
   };
 
   const handleSave = (taskId: string) => {
-    onUpdateActualTime(taskId, actualHours, actualMinutes);
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      // Calculate new total time by adding the additional time to existing time
+      const existingHours = task.actualHours || 0;
+      const existingMinutes = task.actualMinutes || 0;
+      
+      // Calculate total minutes
+      let totalMinutes = existingMinutes + additionalMinutes;
+      // Calculate hour overflow
+      const extraHours = Math.floor(totalMinutes / 60);
+      totalMinutes = totalMinutes % 60;
+      
+      // Calculate total hours
+      const totalHours = existingHours + additionalHours + extraHours;
+      
+      onUpdateActualTime(taskId, totalHours, totalMinutes);
+    }
     setActiveTaskId(null);
   };
 
@@ -88,24 +105,30 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                 <CardContent>
                   {isActive ? (
                     <div className="space-y-4">
+                      {completed && (
+                        <div className={`flex justify-between text-sm ${language === "ar" ? "flex-row-reverse" : ""}`}>
+                          <span className="text-muted-foreground">{t("taskTracker.currentTotal")}</span>
+                          <span>{formatTimeWithLocale(task.actualHours!, task.actualMinutes!)}</span>
+                        </div>
+                      )}
                       <div className="grid grid-cols-2 gap-2 items-end">
                         <div>
                           <label className="text-xs font-medium mb-1 block">
-                            {t("taskTracker.actualHours")}
+                            {t("taskTracker.additionalHours")}
                           </label>
                           <TimePicker
-                            value={actualHours}
-                            onChange={setActualHours}
+                            value={additionalHours}
+                            onChange={(value: number) => setAdditionalHours(value)}
                             unit="hours"
                           />
                         </div>
                         <div>
                           <label className="text-xs font-medium mb-1 block">
-                            {t("taskTracker.actualMinutes")}
+                            {t("taskTracker.additionalMinutes")}
                           </label>
                           <TimePicker
-                            value={actualMinutes}
-                            onChange={setActualMinutes}
+                            value={additionalMinutes}
+                            onChange={(value: number) => setAdditionalMinutes(value)}
                             unit="minutes"
                           />
                         </div>
@@ -115,7 +138,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                         size="sm"
                         onClick={() => handleSave(task.id)}
                       >
-                        {t("taskTracker.save")}
+                        {t("taskTracker.addTime")}
                       </Button>
                     </div>
                   ) : (
@@ -156,7 +179,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                         className="w-full"
                         onClick={() => handleEdit(task)}
                       >
-                        {completed ? t("taskTracker.updateTime") : t("taskTracker.trackTime")}
+                        {completed ? t("taskTracker.addMoreTime") : t("taskTracker.trackTime")}
                       </Button>
                     </div>
                   )}

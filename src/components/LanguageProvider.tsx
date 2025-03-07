@@ -54,9 +54,14 @@ const resources = {
     "taskTracker.remaining": "Remaining:",
     "taskTracker.actualHours": "Actual Hours",
     "taskTracker.actualMinutes": "Actual Minutes",
+    "taskTracker.additionalHours": "Additional Hours",
+    "taskTracker.additionalMinutes": "Additional Minutes",
     "taskTracker.save": "Save",
+    "taskTracker.addTime": "Add Time",
+    "taskTracker.currentTotal": "Current Total:",
     "taskTracker.notTracked": "Not tracked yet",
     "taskTracker.updateTime": "Update Time",
+    "taskTracker.addMoreTime": "Add More Time",
     "taskTracker.trackTime": "Track Time",
     
     // Toasts
@@ -108,9 +113,14 @@ const resources = {
     "taskTracker.remaining": "المتبقي:",
     "taskTracker.actualHours": "الساعات الفعلية",
     "taskTracker.actualMinutes": "الدقائق الفعلية",
+    "taskTracker.additionalHours": "ساعات إضافية",
+    "taskTracker.additionalMinutes": "دقائق إضافية",
     "taskTracker.save": "حفظ",
+    "taskTracker.addTime": "إضافة وقت",
+    "taskTracker.currentTotal": "المجموع الحالي:",
     "taskTracker.notTracked": "لم يتم التتبع بعد",
     "taskTracker.updateTime": "تحديث الوقت",
+    "taskTracker.addMoreTime": "إضافة المزيد من الوقت",
     "taskTracker.trackTime": "تتبع الوقت",
     
     // Toasts
