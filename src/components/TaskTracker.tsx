@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import { Task } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TimePicker from "@/components/ui/TimePicker";
-import { calculateRemainingTime, formatTime } from "@/lib/timeUtils";
+import { calculateRemainingTime, formatTime, timeInMinutes } from "@/lib/timeUtils";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "./LanguageProvider";
+import { toast } from "sonner";
 
 interface TaskTrackerProps {
   tasks: Task[];
@@ -15,33 +16,37 @@ interface TaskTrackerProps {
 const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) => {
   const { t, language } = useLanguage();
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
-  const [additionalHours, setAdditionalHours] = useState<number>(0);
-  const [additionalMinutes, setAdditionalMinutes] = useState<number>(0);
+  const [newHours, setNewHours] = useState<number>(0);
+  const [newMinutes, setNewMinutes] = useState<number>(0);
 
   const handleEdit = (task: Task) => {
     setActiveTaskId(task.id);
-    // Reset to 0 when editing to indicate we're adding time
-    setAdditionalHours(0);
-    setAdditionalMinutes(0);
+    // If task already has time tracked, set the inputs to current values
+    if (task.actualHours !== null && task.actualMinutes !== null) {
+      setNewHours(task.actualHours);
+      setNewMinutes(task.actualMinutes);
+    } else {
+      // Reset to 0 when editing a new task
+      setNewHours(0);
+      setNewMinutes(0);
+    }
   };
 
   const handleSave = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      // Calculate new total time by adding the additional time to existing time
-      const existingHours = task.actualHours || 0;
-      const existingMinutes = task.actualMinutes || 0;
+      // Convert both times to minutes for easy comparison
+      const plannedTimeInMinutes = timeInMinutes(task.plannedHours, task.plannedMinutes);
+      const newTimeInMinutes = timeInMinutes(newHours, newMinutes);
       
-      // Calculate total minutes
-      let totalMinutes = existingMinutes + additionalMinutes;
-      // Calculate hour overflow
-      const extraHours = Math.floor(totalMinutes / 60);
-      totalMinutes = totalMinutes % 60;
+      // Check if new time exceeds planned time
+      if (newTimeInMinutes > plannedTimeInMinutes) {
+        toast.error(t("taskTracker.exceedsPlannedTime"));
+        return;
+      }
       
-      // Calculate total hours
-      const totalHours = existingHours + additionalHours + extraHours;
-      
-      onUpdateActualTime(taskId, totalHours, totalMinutes);
+      // Update the time directly (not adding to previous time)
+      onUpdateActualTime(taskId, newHours, newMinutes);
     }
     setActiveTaskId(null);
   };
@@ -105,30 +110,24 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                 <CardContent>
                   {isActive ? (
                     <div className="space-y-4">
-                      {completed && (
-                        <div className={`flex justify-between text-sm ${language === "ar" ? "flex-row-reverse" : ""}`}>
-                          <span className="text-muted-foreground">{t("taskTracker.currentTotal")}</span>
-                          <span>{formatTimeWithLocale(task.actualHours!, task.actualMinutes!)}</span>
-                        </div>
-                      )}
                       <div className="grid grid-cols-2 gap-2 items-end">
                         <div>
                           <label className="text-xs font-medium mb-1 block">
-                            {t("taskTracker.additionalHours")}
+                            {t("taskTracker.hours")}
                           </label>
                           <TimePicker
-                            value={additionalHours}
-                            onChange={(value) => setAdditionalHours(Number(value))}
+                            value={newHours}
+                            onChange={(value) => setNewHours(Number(value))}
                             unit="hours"
                           />
                         </div>
                         <div>
                           <label className="text-xs font-medium mb-1 block">
-                            {t("taskTracker.additionalMinutes")}
+                            {t("taskTracker.minutes")}
                           </label>
                           <TimePicker
-                            value={additionalMinutes}
-                            onChange={(value) => setAdditionalMinutes(Number(value))}
+                            value={newMinutes}
+                            onChange={(value) => setNewMinutes(Number(value))}
                             unit="minutes"
                           />
                         </div>
@@ -138,7 +137,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                         size="sm"
                         onClick={() => handleSave(task.id)}
                       >
-                        {t("taskTracker.addTime")}
+                        {t("taskTracker.saveTime")}
                       </Button>
                     </div>
                   ) : (
@@ -179,7 +178,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                         className="w-full"
                         onClick={() => handleEdit(task)}
                       >
-                        {completed ? t("taskTracker.addMoreTime") : t("taskTracker.trackTime")}
+                        {completed ? t("taskTracker.updateTime") : t("taskTracker.trackTime")}
                       </Button>
                     </div>
                   )}
