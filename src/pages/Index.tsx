@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Task } from "@/types";
 import TaskAllocation from "@/components/TaskAllocation";
@@ -14,6 +13,7 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { useLanguage } from "@/components/LanguageProvider";
 import { Button } from "@/components/ui/button";
 import { BarChart4, RefreshCw } from "lucide-react";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -183,6 +183,7 @@ const Index = () => {
           </TabsContent>
         </Tabs>
       </div>
+      <ScrollToTopButton />
     </div>
   );
 };
