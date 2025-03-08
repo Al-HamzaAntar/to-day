@@ -89,8 +89,6 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
     return `${hours}h ${minutes}m`;
   };
 
-  const isRTL = language === "ar";
-
   return (
     <div className="space-y-6 animate-fade-in">
       <h2 className="text-xl font-semibold">{t("taskAllocation.title")}</h2>
@@ -98,7 +96,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
       <div className="p-5 rounded-lg glass">
         <div className="flex flex-col space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
-            <div className={`md:col-span-2 ${isRTL ? "text-right" : ""}`}>
+            <div className="md:col-span-2">
               <label htmlFor="task-name" className="text-sm font-medium mb-1.5 block">
                 {t("taskAllocation.taskName")}
               </label>
@@ -111,8 +109,8 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
               />
             </div>
             
-            <div className={`flex ${isRTL ? "flex-row-reverse space-x-reverse" : "space-x-2"} items-end`}>
-              <div className={isRTL ? "text-right" : ""}>
+            <div className="flex space-x-2 items-end">
+              <div>
                 <label htmlFor="hours" className="text-sm font-medium mb-1.5 block">
                   {t("taskAllocation.hours")}
                 </label>
@@ -123,7 +121,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
                 />
               </div>
               
-              <div className={isRTL ? "text-right" : ""}>
+              <div>
                 <label htmlFor="minutes" className="text-sm font-medium mb-1.5 block">
                   {t("taskAllocation.minutes")}
                 </label>
@@ -145,7 +143,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
             </div>
           </div>
           
-          <div className={`text-sm mt-2 ${isRTL ? "text-right" : ""}`}>
+          <div className="text-sm mt-2">
             <span className="font-medium">{t("taskAllocation.timeLeft")} </span>
             <span className={timeLeft.hours < 0 ? "text-destructive" : ""}>
               {timeLeft.hours < 0 ? t("taskAllocation.exceededBy") + " " : ""}
@@ -157,21 +155,21 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
 
       {tasks.length > 0 && (
         <div className="space-y-3">
-          <h3 className={`text-lg font-medium ${isRTL ? "text-right" : ""}`}>{t("taskAllocation.yourTasks")}</h3>
+          <h3 className="text-lg font-medium">{t("taskAllocation.yourTasks")}</h3>
           <div className="space-y-2">
             {tasks.map((task) => (
               <div
                 key={task.id}
                 className="flex justify-between items-center p-3 rounded-md bg-secondary/50 hover:bg-secondary/80 transition-colors"
               >
-                <div className={`flex items-center ${isRTL ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center ${language === "ar" ? "flex-row-reverse" : ""}`}>
                   <div
-                    className={`w-3 h-3 rounded-full ${isRTL ? "ml-3" : "mr-3"}`}
+                    className={`w-3 h-3 rounded-full ${language === "ar" ? "ml-3" : "mr-3"}`}
                     style={{ backgroundColor: task.color }}
                   />
                   <span className="font-medium">{task.name}</span>
                 </div>
-                <div className={`flex items-center ${isRTL ? "flex-row-reverse" : ""} gap-3`}>
+                <div className="flex items-center gap-3">
                   <span className="text-sm">
                     {formatTimeDisplay(task.plannedHours, task.plannedMinutes)}
                   </span>
