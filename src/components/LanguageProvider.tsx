@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type Language = "en" | "ar";
@@ -35,6 +36,7 @@ const resources = {
     // Tabs
     "tabs.plan": "Plan Your Day",
     "tabs.track": "Track Your Time",
+    "tabs.analyze": "Analytics",
     
     // Task allocation
     "taskAllocation.title": "Allocate Your 24 Hours",
@@ -52,22 +54,45 @@ const resources = {
     "taskTracker.plan": "Plan:",
     "taskTracker.actual": "Actual:",
     "taskTracker.remaining": "Remaining:",
-    "taskTracker.actualHours": "Actual Hours",
-    "taskTracker.actualMinutes": "Actual Minutes",
-    "taskTracker.additionalHours": "Additional Hours",
-    "taskTracker.additionalMinutes": "Additional Minutes",
-    "taskTracker.save": "Save",
+    "taskTracker.hours": "Hours",
+    "taskTracker.minutes": "Minutes",
+    "taskTracker.saveTime": "Save Time",
     "taskTracker.addTime": "Add Time",
     "taskTracker.currentTotal": "Current Total:",
     "taskTracker.notTracked": "Not tracked yet",
     "taskTracker.updateTime": "Update Time",
-    "taskTracker.addMoreTime": "Add More Time",
     "taskTracker.trackTime": "Track Time",
+    "taskTracker.exceedsPlannedTime": "Time exceeds what was planned",
+    
+    // Analytics
+    "analysis.title": "Task Analytics",
+    "analysis.week": "This Week",
+    "analysis.month": "This Month",
+    "analysis.pie": "Pie",
+    "analysis.bar": "Bar",
+    "analysis.noData": "No data available yet. Complete some tasks to see analytics.",
+    "analysis.totalTime": "Total Time Spent",
+    "analysis.of": "of",
+    "analysis.planned": "planned",
+    "analysis.actual": "actual",
+    "analysis.efficiency": "Efficiency",
+    "analysis.efficient": "efficient",
+    "analysis.taskDetails": "Task Details",
+    "analysis.mostEfficient": "Most Efficient Task",
+    "analysis.leastEfficient": "Least Efficient Task",
+    "analysis.occurrences": "occurrences",
+    
+    // Reset dialog
+    "reset.title": "Reset All Data",
+    "reset.description": "This will clear all your tasks and history. This action cannot be undone.",
+    "reset.cancel": "Cancel",
+    "reset.confirm": "Yes, Reset",
     
     // Toasts
     "toast.taskAdded": "Task added successfully!",
     "toast.taskRemoved": "Task removed successfully!",
     "toast.timeUpdated": "Time updated successfully!",
+    "toast.dataCleared": "All data cleared successfully!",
     "toast.error.emptyName": "Task name cannot be empty",
     "toast.error.zeroDuration": "Task duration must be greater than 0",
     "toast.error.exceed24": "Total time cannot exceed 24 hours",
@@ -95,6 +120,7 @@ const resources = {
     // Tabs
     "tabs.plan": "خطط يومك",
     "tabs.track": "تتبع وقتك",
+    "tabs.analyze": "التحليلات",
     
     // Task allocation
     "taskAllocation.title": "وزع 24 ساعة",
@@ -112,22 +138,45 @@ const resources = {
     "taskTracker.plan": "الخطة:",
     "taskTracker.actual": "الفعلي:",
     "taskTracker.remaining": "المتبقي:",
-    "taskTracker.actualHours": "الساعات الفعلية",
-    "taskTracker.actualMinutes": "الدقائق الفعلية",
-    "taskTracker.additionalHours": "ساعات إضافية",
-    "taskTracker.additionalMinutes": "دقائق إضافية",
-    "taskTracker.save": "حفظ",
+    "taskTracker.hours": "ساعات",
+    "taskTracker.minutes": "دقائق",
+    "taskTracker.saveTime": "حفظ الوقت",
     "taskTracker.addTime": "إضافة وقت",
     "taskTracker.currentTotal": "المجموع الحالي:",
     "taskTracker.notTracked": "لم يتم التتبع بعد",
     "taskTracker.updateTime": "تحديث الوقت",
-    "taskTracker.addMoreTime": "إضافة المزيد من الوقت",
     "taskTracker.trackTime": "تتبع الوقت",
+    "taskTracker.exceedsPlannedTime": "الوقت يتجاوز ما كان مخططا له",
+    
+    // Analytics
+    "analysis.title": "تحليل المهام",
+    "analysis.week": "هذا الأسبوع",
+    "analysis.month": "هذا الشهر",
+    "analysis.pie": "دائري",
+    "analysis.bar": "شريطي",
+    "analysis.noData": "لا توجد بيانات متاحة بعد. أكمل بعض المهام لرؤية التحليلات.",
+    "analysis.totalTime": "إجمالي الوقت المستغرق",
+    "analysis.of": "من",
+    "analysis.planned": "مخطط",
+    "analysis.actual": "فعلي",
+    "analysis.efficiency": "الكفاءة",
+    "analysis.efficient": "كفاءة",
+    "analysis.taskDetails": "تفاصيل المهام",
+    "analysis.mostEfficient": "المهمة الأكثر كفاءة",
+    "analysis.leastEfficient": "المهمة الأقل كفاءة",
+    "analysis.occurrences": "مرات",
+    
+    // Reset dialog
+    "reset.title": "إعادة تعيين البيانات",
+    "reset.description": "سيؤدي هذا إلى مسح جميع مهامك وسجلك. لا يمكن التراجع عن هذا الإجراء.",
+    "reset.cancel": "إلغاء",
+    "reset.confirm": "نعم، إعادة التعيين",
     
     // Toasts
     "toast.taskAdded": "تمت إضافة المهمة بنجاح!",
     "toast.taskRemoved": "تمت إزالة المهمة بنجاح!",
     "toast.timeUpdated": "تم تحديث الوقت بنجاح!",
+    "toast.dataCleared": "تم مسح جميع البيانات بنجاح!",
     "toast.error.emptyName": "لا يمكن أن يكون اسم المهمة فارغًا",
     "toast.error.zeroDuration": "يجب أن تكون مدة المهمة أكبر من 0",
     "toast.error.exceed24": "لا يمكن أن يتجاوز الوقت الإجمالي 24 ساعة",

@@ -3,16 +3,17 @@ import React, { useState, useEffect } from "react";
 import { Task } from "@/types";
 import TaskAllocation from "@/components/TaskAllocation";
 import TaskTracker from "@/components/TaskTracker";
+import TaskAnalysis from "@/components/TaskAnalysis";
 import TimeDisplay from "@/components/TimeDisplay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { calculateActualTotalTime, calculateTotalTime, formatTime } from "@/lib/timeUtils";
+import { calculateActualTotalTime, calculateTotalTime, formatTime, saveTasksHistory } from "@/lib/timeUtils";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useLanguage } from "@/components/LanguageProvider";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { BarChart4, RefreshCw } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +37,11 @@ const Index = () => {
 
   useEffect(() => {
     localStorage.setItem("today-tasks", JSON.stringify(tasks));
+    
+    // Save tasks history if any task has actual time tracked
+    if (tasks.some(task => task.actualHours !== null)) {
+      saveTasksHistory(tasks);
+    }
   }, [tasks]);
 
   const handleAddTask = (task: Task) => {
@@ -151,6 +157,10 @@ const Index = () => {
           <TabsList className="w-full mb-6">
             <TabsTrigger value="allocate" className="flex-1">{t("tabs.plan")}</TabsTrigger>
             <TabsTrigger value="track" className="flex-1">{t("tabs.track")}</TabsTrigger>
+            <TabsTrigger value="analyze" className="flex-1 flex items-center justify-center gap-1">
+              <BarChart4 className="h-4 w-4" />
+              <span>{t("tabs.analyze")}</span>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="allocate" className="pt-2">
@@ -166,6 +176,10 @@ const Index = () => {
               tasks={tasks}
               onUpdateActualTime={handleUpdateActualTime}
             />
+          </TabsContent>
+          
+          <TabsContent value="analyze" className="pt-2">
+            <TaskAnalysis />
           </TabsContent>
         </Tabs>
       </div>

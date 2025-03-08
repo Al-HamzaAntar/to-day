@@ -15,3 +15,15 @@ export interface TimeAllocation {
 }
 
 export type TimeUnit = 'hours' | 'minutes';
+
+export type AnalysisPeriod = 'week' | 'month' | 'all';
+
+export interface TaskAnalytics {
+  name: string;
+  planned: TimeAllocation;
+  actual: TimeAllocation;
+  plannedMinutes: number;
+  actualMinutes: number;
+  occurrences: number;
+  efficiency: number;
+}
