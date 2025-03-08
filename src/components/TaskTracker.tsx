@@ -1,191 +1,183 @@
-
 import React, { useState } from "react";
 import { Task } from "@/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TimePicker from "@/components/ui/TimePicker";
-import { calculateRemainingTime, formatTime, timeInMinutes } from "@/lib/timeUtils";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "./LanguageProvider";
+import TimePicker from "@/components/ui/TimePicker";
+import {
+  calculateActualTotalTime,
+  formatTime,
+  validateActualTotalTime,
+} from "@/lib/timeUtils";
 import { toast } from "sonner";
+import { useLanguage } from "@/components/LanguageProvider";
 
 interface TaskTrackerProps {
   tasks: Task[];
   onUpdateActualTime: (taskId: string, hours: number, minutes: number) => void;
 }
 
+interface TaskTime {
+  hours: number | null;
+  minutes: number | null;
+}
+
 const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) => {
   const { t, language } = useLanguage();
-  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
-  const [newHours, setNewHours] = useState<number>(0);
-  const [newMinutes, setNewMinutes] = useState<number>(0);
+  const [selectedTask, setSelectedTask] = useState<string | null>(null);
+  const [actualHours, setActualHours] = useState<number | null>(null);
+  const [actualMinutes, setActualMinutes] = useState<number | null>(null);
 
-  const handleEdit = (task: Task) => {
-    setActiveTaskId(task.id);
-    // If task already has time tracked, set the inputs to current values
-    if (task.actualHours !== null && task.actualMinutes !== null) {
-      setNewHours(task.actualHours);
-      setNewMinutes(task.actualMinutes);
-    } else {
-      // Reset to 0 when editing a new task
-      setNewHours(0);
-      setNewMinutes(0);
+  const handleTaskSelect = (taskId: string) => {
+    const task = tasks.find((task) => task.id === taskId);
+    setSelectedTask(taskId);
+    setActualHours(task?.actualHours || 0);
+    setActualMinutes(task?.actualMinutes || 0);
+  };
+
+  const handleSaveTime = () => {
+    if (!selectedTask || actualHours === null || actualMinutes === null) return;
+
+    const task = tasks.find((task) => task.id === selectedTask);
+    if (!task) return;
+
+    if (actualHours === task.plannedHours && actualMinutes > task.plannedMinutes) {
+      toast.error(t("taskTracker.exceedsPlannedTime"));
+      return;
     }
-  };
 
-  const handleSave = (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
-    if (task) {
-      // Convert both times to minutes for easy comparison
-      const plannedTimeInMinutes = timeInMinutes(task.plannedHours, task.plannedMinutes);
-      const newTimeInMinutes = timeInMinutes(newHours, newMinutes);
-      
-      // Check if new time exceeds planned time
-      if (newTimeInMinutes > plannedTimeInMinutes) {
-        toast.error(t("taskTracker.exceedsPlannedTime"));
-        return;
-      }
-      
-      // Update the time directly (not adding to previous time)
-      onUpdateActualTime(taskId, newHours, newMinutes);
+    if (actualHours > task.plannedHours) {
+      toast.error(t("taskTracker.exceedsPlannedTime"));
+      return;
     }
-    setActiveTaskId(null);
+
+    onUpdateActualTime(selectedTask, actualHours, actualMinutes);
+    setSelectedTask(null);
   };
 
-  const toArabicDigits = (num: number): string => {
-    if (language !== "ar") return num.toString();
-    return num.toString().replace(/\d/g, d => 
-      String.fromCharCode(1632 + parseInt(d, 10))
-    );
+  const getTaskTime = (taskId: string): TaskTime => {
+    const task = tasks.find((task) => task.id === taskId);
+    return {
+      hours: task?.actualHours || null,
+      minutes: task?.actualMinutes || null,
+    };
   };
 
-  const formatTimeWithLocale = (hours: number, minutes: number): string => {
-    if (language === "ar") {
-      const arabicHours = toArabicDigits(hours);
-      const arabicMinutes = toArabicDigits(minutes < 10 ? `0${minutes}` : minutes);
-      return `${arabicHours}س ${arabicMinutes}د`;
+  const calculateRemainingTime = (task: Task) => {
+    const actualHoursValue = task.actualHours !== null ? task.actualHours : 0;
+    const actualMinutesValue = task.actualMinutes !== null ? task.actualMinutes : 0;
+
+    let remainingHours = task.plannedHours - actualHoursValue;
+    let remainingMinutes = task.plannedMinutes - actualMinutesValue;
+
+    if (remainingMinutes < 0) {
+      remainingHours--;
+      remainingMinutes += 60;
     }
-    return formatTime(hours, minutes);
+
+    if (remainingHours < 0) {
+      remainingHours = 0;
+      remainingMinutes = 0;
+    }
+
+    return { hours: remainingHours, minutes: remainingMinutes };
   };
+
+  const currentTotalTime = calculateActualTotalTime(tasks);
 
   return (
     <div className="space-y-6 animate-fade-in">
       <h2 className="text-xl font-semibold">{t("taskTracker.title")}</h2>
-      
+
       {tasks.length === 0 ? (
-        <div className="bg-muted p-6 rounded-lg text-center">
-          <p className="text-muted-foreground">{t("taskTracker.noTasks")}</p>
+        <div className="p-5 rounded-lg glass">
+          <p className="text-center text-muted-foreground">{t("taskTracker.noTasks")}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-4">
           {tasks.map((task) => {
-            const isActive = activeTaskId === task.id;
+            const isSelected = selectedTask === task.id;
+            const taskTime = getTaskTime(task.id);
             const remainingTime = calculateRemainingTime(task);
-            const completed = task.actualHours !== null;
-            const progress = completed
-              ? Math.min(
-                  100,
-                  ((task.actualHours! * 60 + task.actualMinutes!) /
-                    (task.plannedHours * 60 + task.plannedMinutes)) *
-                    100
-                )
-              : 0;
 
             return (
-              <Card
+              <div
                 key={task.id}
-                className="overflow-hidden transition-all duration-300 hover:shadow-md"
+                className="p-5 rounded-lg glass"
               >
-                <div
-                  className="h-1"
-                  style={{ backgroundColor: task.color }}
-                />
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex justify-between items-center">
-                    <span className={`truncate ${language === "ar" ? "order-last" : "order-first"}`}>{task.name}</span>
-                    <span className={`text-xs font-normal bg-secondary px-2 py-1 rounded-full ${language === "ar" ? "order-first" : "order-last"}`}>
-                      {t("taskTracker.plan")} {formatTimeWithLocale(task.plannedHours, task.plannedMinutes)}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isActive ? (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-2 items-end">
-                        <div>
-                          <label className="text-xs font-medium mb-1 block">
-                            {t("taskTracker.hours")}
-                          </label>
-                          <TimePicker
-                            value={newHours}
-                            onChange={(value: number) => setNewHours(value)}
-                            unit="hours"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-medium mb-1 block">
-                            {t("taskTracker.minutes")}
-                          </label>
-                          <TimePicker
-                            value={newMinutes}
-                            onChange={(value: number) => setNewMinutes(value)}
-                            unit="minutes"
-                          />
-                        </div>
-                      </div>
-                      <Button
-                        className="w-full"
-                        size="sm"
-                        onClick={() => handleSave(task.id)}
-                      >
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center">
+                    <div
+                      className="w-3 h-3 rounded-full mr-3"
+                      style={{ backgroundColor: task.color }}
+                    />
+                    <h3 className="text-lg font-medium">{task.name}</h3>
+                  </div>
+                  
+                  <div>
+                    {isSelected ? (
+                      <Button variant="secondary" size="sm" onClick={handleSaveTime}>
                         {t("taskTracker.saveTime")}
                       </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className={`flex justify-between text-sm ${language === "ar" ? "flex-row-reverse" : ""}`}>
-                        <span className="text-muted-foreground">{t("taskTracker.actual")}</span>
-                        <span>
-                          {completed
-                            ? formatTimeWithLocale(task.actualHours!, task.actualMinutes!)
-                            : t("taskTracker.notTracked")}
-                        </span>
-                      </div>
-                      
-                      {completed && (
-                        <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                          <div
-                            className="h-full time-progress"
-                            style={{
-                              width: `${progress}%`,
-                              backgroundColor: task.color,
-                            }}
-                          />
-                        </div>
-                      )}
-                      
-                      <div className={`flex justify-between text-sm ${language === "ar" ? "flex-row-reverse" : ""}`}>
-                        <span className="text-muted-foreground">{t("taskTracker.remaining")}</span>
-                        <span>
-                          {completed
-                            ? formatTimeWithLocale(remainingTime.hours, remainingTime.minutes)
-                            : "-"}
-                        </span>
-                      </div>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={() => handleEdit(task)}
-                      >
-                        {completed ? t("taskTracker.updateTime") : t("taskTracker.trackTime")}
+                    ) : (
+                      <Button variant="outline" size="sm" onClick={() => handleTaskSelect(task.id)}>
+                        {taskTime.hours !== null && taskTime.minutes !== null
+                          ? t("taskTracker.updateTime")
+                          : t("taskTracker.trackTime")}
                       </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">{t("taskTracker.plan")}</p>
+                    <p className="font-medium">
+                      {formatTime(task.plannedHours, task.plannedMinutes)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">{t("taskTracker.actual")}</p>
+                    {isSelected ? (
+                      <div className="flex items-center space-x-2">
+                        <TimePicker
+                          value={actualHours !== null ? actualHours : 0}
+                          onChange={(value: number) => setActualHours(value)}
+                          unit="hours"
+                          max={task.plannedHours}
+                        />
+                        <TimePicker
+                          value={actualMinutes !== null ? actualMinutes : 0}
+                          onChange={(value: number) => setActualMinutes(value)}
+                          unit="minutes"
+                          max={59}
+                        />
+                      </div>
+                    ) : taskTime.hours !== null && taskTime.minutes !== null ? (
+                      <p className="font-medium">
+                        {formatTime(taskTime.hours, taskTime.minutes)}
+                      </p>
+                    ) : (
+                      <p className="text-muted-foreground">{t("taskTracker.notTracked")}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">{t("taskTracker.remaining")}</p>
+                    <p className="font-medium">
+                      {formatTime(remainingTime.hours, remainingTime.minutes)}
+                    </p>
+                  </div>
+                </div>
+              </div>
             );
           })}
+
+          <div className="mt-6">
+            <h3 className="text-lg font-medium">{t("taskTracker.currentTotal")}:</h3>
+            <p className="text-muted-foreground">
+              {formatTime(currentTotalTime.hours, currentTotalTime.minutes)}
+            </p>
+          </div>
         </div>
       )}
     </div>

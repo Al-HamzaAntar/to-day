@@ -1,7 +1,8 @@
-
 import React from "react";
 import { Task } from "@/types";
-import { calculateTotalTime, calculateActualTotalTime, formatTime } from "@/lib/timeUtils";
+import { Pie, PieChart, ResponsiveContainer, Cell, Legend } from "recharts";
+import { Progress } from "@/components/ui/progress";
+import { calculateTotalTime, calculateActualTotalTime } from "@/lib/timeUtils";
 import { useLanguage } from "./LanguageProvider";
 
 interface TimeDisplayProps {
@@ -9,117 +10,96 @@ interface TimeDisplayProps {
 }
 
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
-  const { t, language } = useLanguage();
-  const totalTime = calculateTotalTime(tasks);
-  const totalHours = totalTime.hours;
-  const totalMinutes = totalTime.minutes;
-  
+  const { t } = useLanguage();
+  const totalPlannedTime = calculateTotalTime(tasks);
   const totalActualTime = calculateActualTotalTime(tasks);
-  const totalActualHours = totalActualTime.hours;
-  const totalActualMinutes = totalActualTime.minutes;
-  
-  const remainingHours = 24 - totalHours;
-  const remainingMinutes = totalMinutes > 0 ? 60 - totalMinutes : 0;
-  
-  // Adjust remaining hours if we borrowed minutes
-  const adjustedRemainingHours = totalMinutes > 0 ? remainingHours - 1 : remainingHours;
-  
-  // Calculate completion percentage based on actual time vs planned time
-  const totalPlannedMinutes = totalHours * 60 + totalMinutes;
-  const actualMinutesTotal = totalActualHours * 60 + totalActualMinutes;
-  const completionPercentage = totalPlannedMinutes > 0 
-    ? Math.min(100, (actualMinutesTotal / totalPlannedMinutes) * 100) 
-    : 0;
 
-  // Convert western digits to Arabic digits
-  const toArabicDigits = (num: number): string => {
-    if (language !== "ar") return num.toString();
-    return num.toString().replace(/\d/g, d => 
-      String.fromCharCode(1632 + parseInt(d, 10))
+  const plannedHours = totalPlannedTime.hours;
+  const plannedMinutes = totalPlannedTime.minutes;
+  const actualHours = totalActualTime.hours;
+  const actualMinutes = totalActualTime.minutes;
+
+  const totalHours = 24;
+  const usedHours = plannedHours;
+  const usedMinutes = plannedMinutes;
+  const remainingHours = totalHours - usedHours - (usedMinutes > 0 ? 1 : 0);
+  const remainingMinutes = usedMinutes > 0 ? 60 - usedMinutes : 0;
+
+  const COLORS = tasks.map((task) => task.color);
+
+  const RADIAN = Math.PI / 180;
+  const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+    index,
+  }: any) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+      >
+        {`${tasks[index].name} (${(percent * 100).toFixed(0)}%)`}
+      </text>
     );
   };
 
-  // Format time with Arabic numerals and units if needed
-  const formatTimeWithLocale = (hours: number, minutes: number): string => {
-    if (language === "ar") {
-      const arabicHours = toArabicDigits(hours);
-      const arabicMinutes = toArabicDigits(minutes < 10 ? `0${minutes}` : minutes);
-      return `${arabicHours}س ${arabicMinutes}د`;
-    }
-    return formatTime(hours, minutes);
-  };
-
   return (
-    <div className="mb-8 w-full animate-fade-in">
-      <h2 className="text-xl font-semibold mb-2">{t("time.allocation")}</h2>
-      <div className="w-full h-6 bg-secondary rounded-full overflow-hidden">
-        {tasks.map((task, index) => {
-          const widthPercent = ((task.plannedHours * 60 + task.plannedMinutes) / (24 * 60)) * 100;
-          return (
-            <div
-              key={task.id}
-              className="h-full float-left transition-all duration-300 ease-in-out"
-              style={{
-                width: `${widthPercent}%`,
-                backgroundColor: task.color,
-              }}
-              title={`${task.name}: ${formatTimeWithLocale(task.plannedHours, task.plannedMinutes)}`}
-            />
-          );
-        })}
-      </div>
-      
-      <div className="flex items-center justify-between mt-4">
-        <div className="text-sm">
-          <span className="font-medium">{t("time.used")} </span>
-          <span>{formatTimeWithLocale(totalHours, totalMinutes)}</span>
-        </div>
-        <div className="text-sm">
-          <span className="font-medium">{t("time.remaining")} </span>
-          <span>
-            {formatTimeWithLocale(
-              adjustedRemainingHours < 0 ? 0 : adjustedRemainingHours,
-              remainingMinutes
-            )}
-          </span>
-        </div>
-        <div className="text-sm">
-          <span className="font-medium">{t("time.total")} </span>
-          <span>{language === "ar" ? `${toArabicDigits(24)}س ${toArabicDigits(0)}د` : "24h 00m"}</span>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
+      <div className="p-6 rounded-xl glass dark:glass-dark">
+        <h2 className="text-xl font-semibold mb-4">{t("time.allocation")}</h2>
+        <div className="space-y-3">
+          <div className="flex justify-between">
+            <span>{t("time.used")}</span>
+            <span>{plannedHours}h {plannedMinutes}m</span>
+          </div>
+          <div className="flex justify-between">
+            <span>{t("time.remaining")}</span>
+            <span>{remainingHours}h {remainingMinutes}m</span>
+          </div>
+          <div className="flex justify-between font-medium">
+            <span>{t("time.total")}</span>
+            <span>{totalHours}h 0m</span>
+          </div>
+          <Progress value={(usedHours / totalHours) * 100} className="h-4" />
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 mt-4">
-        <div className="flex justify-between items-center">
-          <h3 className="font-medium text-sm">{t("time.completion")}</h3>
-          <span className="text-sm font-medium">{Math.round(completionPercentage)}%</span>
-        </div>
-        <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-          <div
-            className="h-full transition-all duration-300 ease-in-out"
-            style={{
-              width: `${completionPercentage}%`,
-              backgroundColor: "hsl(var(--primary))",
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <h3 className="font-medium text-sm mb-2">{t("time.breakdown")}</h3>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {tasks.map((task) => (
-            <div key={task.id} className={`flex items-center gap-2 ${language === "ar" ? "flex-row-reverse" : ""}`}>
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: task.color }}
-              />
-              <span className="text-sm truncate" title={task.name}>
-                {task.name}
-              </span>
-            </div>
-          ))}
-        </div>
+      <div className="p-6 rounded-xl glass dark:glass-dark">
+        <h2 className="text-xl font-semibold mb-4">{t("time.breakdown")}</h2>
+        {tasks.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={tasks}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={renderCustomizedLabel}
+                outerRadius={120}
+                fill="#8884d8"
+                dataKey="plannedHours"
+              >
+                {tasks.map((_entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <p className="text-center text-muted-foreground">No tasks added yet.</p>
+        )}
       </div>
     </div>
   );
