@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Task } from "@/types";
 import TaskAllocation from "@/components/TaskAllocation";
@@ -14,6 +15,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { Button } from "@/components/ui/button";
 import { BarChart4, RefreshCw } from "lucide-react";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import ExportButton from "@/components/ExportButton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,25 +84,29 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
       <div className={`container mx-auto py-8 px-4 max-w-5xl ${language === 'ar' ? 'font-arabic' : ''}`}>
         <div className="flex justify-between mb-4 gap-2">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-full">
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t("reset.title")}</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t("reset.description")}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t("reset.cancel")}</AlertDialogCancel>
-                <AlertDialogAction onClick={resetAllData}>{t("reset.confirm")}</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <div className="flex gap-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full">
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("reset.title")}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("reset.description")}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("reset.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={resetAllData}>{t("reset.confirm")}</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            
+            <ExportButton tasks={tasks} />
+          </div>
           
           <div className="flex gap-2">
             <LanguageToggle />
