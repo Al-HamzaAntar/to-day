@@ -89,14 +89,16 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
     return `${hours}h ${minutes}m`;
   };
 
+  const isRtl = language === "ar";
+
   return (
     <div className="space-y-6 animate-fade-in">
       <h2 className="text-xl font-semibold">{t("taskAllocation.title")}</h2>
       
       <div className="p-5 rounded-lg glass">
         <div className="flex flex-col space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
-            <div className="md:col-span-2">
+          <div className={`grid grid-cols-1 md:grid-cols-4 gap-3 items-end ${isRtl ? 'md:rtl' : ''}`}>
+            <div className={`md:col-span-2 ${isRtl ? 'md:order-2' : 'md:order-1'}`}>
               <label htmlFor="task-name" className="text-sm font-medium mb-1.5 block">
                 {t("taskAllocation.taskName")}
               </label>
@@ -109,7 +111,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
               />
             </div>
             
-            <div className="flex space-x-2 items-end">
+            <div className={`flex ${isRtl ? 'space-x-reverse space-x-2 md:order-1' : 'space-x-2 md:order-2'} items-end`}>
               <div>
                 <label htmlFor="hours" className="text-sm font-medium mb-1.5 block">
                   {t("taskAllocation.hours")}
@@ -133,7 +135,7 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
               </div>
             </div>
             
-            <div>
+            <div className={isRtl ? 'md:order-0' : 'md:order-3'}>
               <Button 
                 onClick={handleAddTask} 
                 className="w-full"
@@ -155,21 +157,23 @@ const TaskAllocation: React.FC<TaskAllocationProps> = ({
 
       {tasks.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-lg font-medium">{t("taskAllocation.yourTasks")}</h3>
+          <h3 className={`text-lg font-medium ${isRtl ? 'text-right' : ''}`}>
+            {t("taskAllocation.yourTasks")}
+          </h3>
           <div className="space-y-2">
             {tasks.map((task) => (
               <div
                 key={task.id}
                 className="flex justify-between items-center p-3 rounded-md bg-secondary/50 hover:bg-secondary/80 transition-colors"
               >
-                <div className={`flex items-center ${language === "ar" ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center ${isRtl ? "flex-row-reverse" : ""}`}>
                   <div
-                    className={`w-3 h-3 rounded-full ${language === "ar" ? "ml-3" : "mr-3"}`}
+                    className={`w-3 h-3 rounded-full ${isRtl ? "ml-3" : "mr-3"}`}
                     style={{ backgroundColor: task.color }}
                   />
                   <span className="font-medium">{task.name}</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className={`flex items-center gap-3 ${isRtl ? "flex-row-reverse" : ""}`}>
                   <span className="text-sm">
                     {formatTimeDisplay(task.plannedHours, task.plannedMinutes)}
                   </span>
