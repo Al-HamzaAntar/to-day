@@ -16,7 +16,7 @@ export interface TimeAllocation {
 
 export type TimeUnit = 'hours' | 'minutes';
 
-export type AnalysisPeriod = 'week' | 'month' | 'all';
+export type AnalysisPeriod = 'day' | 'week' | 'month' | 'all';
 
 export interface TaskAnalytics {
   name: string;

@@ -1,4 +1,3 @@
-
 import { Task, TimeAllocation, AnalysisPeriod, TaskAnalytics } from "../types";
 
 export const formatTime = (hours: number, minutes: number): string => {
@@ -90,6 +89,12 @@ export const getStartOfMonth = (date: Date = new Date()): Date => {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 };
 
+export const getStartOfDay = (date: Date = new Date()): Date => {
+  const newDate = new Date(date);
+  newDate.setHours(0, 0, 0, 0);
+  return newDate;
+};
+
 export const formatDate = (date: Date): string => {
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -142,7 +147,10 @@ export const getAnalyticsData = (period: AnalysisPeriod): TaskAnalytics[] => {
     const entryDate = new Date(entry.date);
     const now = new Date();
     
-    if (period === 'week') {
+    if (period === 'day') {
+      const startOfDay = getStartOfDay();
+      return entryDate >= startOfDay;
+    } else if (period === 'week') {
       const startOfWeek = getStartOfWeek();
       return entryDate >= startOfWeek;
     } else if (period === 'month') {

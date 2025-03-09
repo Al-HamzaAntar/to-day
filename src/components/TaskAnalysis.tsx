@@ -1,10 +1,10 @@
-
 import React, { useState } from "react";
 import { 
   getAnalyticsData, 
   formatTime, 
   getStartOfWeek, 
-  getStartOfMonth, 
+  getStartOfMonth,
+  getStartOfDay,
   formatDate 
 } from "@/lib/timeUtils";
 import { AnalysisPeriod, TaskAnalytics } from "@/types";
@@ -17,7 +17,7 @@ import { ChartPie, BarChart4, Trophy, Clock, Calendar } from "lucide-react";
 
 const TaskAnalysis: React.FC = () => {
   const { t, language } = useLanguage();
-  const [period, setPeriod] = useState<AnalysisPeriod>("week");
+  const [period, setPeriod] = useState<AnalysisPeriod>("day");
   const [chartType, setChartType] = useState<"pie" | "bar">("pie");
   
   const data = getAnalyticsData(period);
@@ -26,7 +26,9 @@ const TaskAnalysis: React.FC = () => {
   // Time period description
   const getPeriodDescription = () => {
     const now = new Date();
-    if (period === "week") {
+    if (period === "day") {
+      return formatDate(now);
+    } else if (period === "week") {
       const start = getStartOfWeek();
       return `${formatDate(start)} - ${formatDate(now)}`;
     } else if (period === "month") {
@@ -64,6 +66,10 @@ const TaskAnalysis: React.FC = () => {
         <div className="flex flex-wrap gap-2">
           <Tabs value={period} onValueChange={(value) => setPeriod(value as AnalysisPeriod)} className="w-auto">
             <TabsList>
+              <TabsTrigger value="day" className="flex gap-1 items-center">
+                <Calendar className="h-3.5 w-3.5" />
+                <span>{t("analysis.day")}</span>
+              </TabsTrigger>
               <TabsTrigger value="week" className="flex gap-1 items-center">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>{t("analysis.week")}</span>
