@@ -67,9 +67,11 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
     return formatTime(hours, minutes);
   };
 
+  const isRtl = language === "ar";
+
   return (
     <div className="space-y-6 animate-fade-in">
-      <h2 className="text-xl font-semibold">{t("taskTracker.title")}</h2>
+      <h2 className={`text-xl font-semibold ${isRtl ? 'text-right' : ''}`}>{t("taskTracker.title")}</h2>
       
       {tasks.length === 0 ? (
         <div className="bg-muted p-6 rounded-lg text-center">
@@ -101,8 +103,8 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                 />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex justify-between items-center">
-                    <span className={`truncate ${language === "ar" ? "order-last" : "order-first"}`}>{task.name}</span>
-                    <span className={`text-xs font-normal bg-secondary px-2 py-1 rounded-full ${language === "ar" ? "order-first" : "order-last"}`}>
+                    <span className={`truncate ${isRtl ? "order-last" : "order-first"}`}>{task.name}</span>
+                    <span className={`text-xs font-normal bg-secondary px-2 py-1 rounded-full ${isRtl ? "order-first" : "order-last"}`}>
                       {t("taskTracker.plan")} {formatTimeWithLocale(task.plannedHours, task.plannedMinutes)}
                     </span>
                   </CardTitle>
@@ -112,22 +114,22 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-2 items-end">
                         <div>
-                          <label className="text-xs font-medium mb-1 block">
+                          <label className={`text-xs font-medium mb-1 block ${isRtl ? 'text-right' : ''}`}>
                             {t("taskTracker.hours")}
                           </label>
                           <TimePicker
                             value={newHours}
-                            onChange={(value) => setNewHours(Number(value))}
+                            onChange={(value) => setNewHours(value)}
                             unit="hours"
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-medium mb-1 block">
+                          <label className={`text-xs font-medium mb-1 block ${isRtl ? 'text-right' : ''}`}>
                             {t("taskTracker.minutes")}
                           </label>
                           <TimePicker
                             value={newMinutes}
-                            onChange={(value) => setNewMinutes(Number(value))}
+                            onChange={(value) => setNewMinutes(value)}
                             unit="minutes"
                           />
                         </div>
@@ -142,7 +144,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <div className={`flex justify-between text-sm ${language === "ar" ? "flex-row-reverse" : ""}`}>
+                      <div className={`flex justify-between text-sm ${isRtl ? "flex-row-reverse" : ""}`}>
                         <span className="text-muted-foreground">{t("taskTracker.actual")}</span>
                         <span>
                           {completed
@@ -154,7 +156,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                       {completed && (
                         <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
                           <div
-                            className="h-full time-progress"
+                            className={`h-full time-progress ${isRtl ? 'float-right' : 'float-left'}`}
                             style={{
                               width: `${progress}%`,
                               backgroundColor: task.color,
@@ -163,7 +165,7 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
                         </div>
                       )}
                       
-                      <div className={`flex justify-between text-sm ${language === "ar" ? "flex-row-reverse" : ""}`}>
+                      <div className={`flex justify-between text-sm ${isRtl ? "flex-row-reverse" : ""}`}>
                         <span className="text-muted-foreground">{t("taskTracker.remaining")}</span>
                         <span>
                           {completed

@@ -49,16 +49,18 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
     return formatTime(hours, minutes);
   };
 
+  const isRtl = language === "ar";
+
   return (
     <div className="mb-8 w-full animate-fade-in">
-      <h2 className="text-xl font-semibold mb-2">{t("time.allocation")}</h2>
+      <h2 className={`text-xl font-semibold mb-2 ${isRtl ? 'text-right' : ''}`}>{t("time.allocation")}</h2>
       <div className="w-full h-6 bg-secondary rounded-full overflow-hidden">
         {tasks.map((task, index) => {
           const widthPercent = ((task.plannedHours * 60 + task.plannedMinutes) / (24 * 60)) * 100;
           return (
             <div
               key={task.id}
-              className="h-full float-left transition-all duration-300 ease-in-out"
+              className={`h-full ${isRtl ? 'float-right' : 'float-left'} transition-all duration-300 ease-in-out`}
               style={{
                 width: `${widthPercent}%`,
                 backgroundColor: task.color,
@@ -69,7 +71,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
         })}
       </div>
       
-      <div className="flex items-center justify-between mt-4">
+      <div className={`flex items-center justify-between mt-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
         <div className="text-sm">
           <span className="font-medium">{t("time.used")} </span>
           <span>{formatTimeWithLocale(totalHours, totalMinutes)}</span>
@@ -90,13 +92,13 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
       </div>
 
       <div className="flex flex-col gap-2 mt-4">
-        <div className="flex justify-between items-center">
+        <div className={`flex justify-between items-center ${isRtl ? 'flex-row-reverse' : ''}`}>
           <h3 className="font-medium text-sm">{t("time.completion")}</h3>
           <span className="text-sm font-medium">{Math.round(completionPercentage)}%</span>
         </div>
         <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
           <div
-            className="h-full transition-all duration-300 ease-in-out"
+            className={`h-full transition-all duration-300 ease-in-out ${isRtl ? 'float-right' : 'float-left'}`}
             style={{
               width: `${completionPercentage}%`,
               backgroundColor: "hsl(var(--primary))",
@@ -106,10 +108,10 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
       </div>
 
       <div className="mt-6">
-        <h3 className="font-medium text-sm mb-2">{t("time.breakdown")}</h3>
+        <h3 className={`font-medium text-sm mb-2 ${isRtl ? 'text-right' : ''}`}>{t("time.breakdown")}</h3>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {tasks.map((task) => (
-            <div key={task.id} className={`flex items-center gap-2 ${language === "ar" ? "flex-row-reverse" : ""}`}>
+            <div key={task.id} className={`flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
               <div
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: task.color }}

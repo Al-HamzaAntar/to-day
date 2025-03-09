@@ -67,6 +67,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
         value={internalValue.toString()}
         onValueChange={handleChange}
         disabled={disabled}
+        dir={language === "ar" ? "rtl" : "ltr"}
       >
         <SelectTrigger className="w-full focus:ring-1 focus:ring-primary/20">
           <SelectValue placeholder={`${language === "ar" ? toArabicDigits(0) : "0"} ${unit}`} />
