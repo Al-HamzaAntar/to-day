@@ -21,23 +21,31 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
 
   const handleEdit = (task: Task) => {
     setActiveTaskId(task.id);
-    // If task already has time tracked, set the inputs to current values
-    if (task.actualHours !== null && task.actualMinutes !== null) {
-      setNewHours(task.actualHours);
-      setNewMinutes(task.actualMinutes);
-    } else {
-      // Reset to 0 when editing a new task
-      setNewHours(0);
-      setNewMinutes(0);
-    }
+    // Reset values to 0 when starting to edit
+    setNewHours(0);
+    setNewMinutes(0);
   };
 
   const handleSave = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
+      // Get current actual time (or 0 if not tracked yet)
+      const currentHours = task.actualHours || 0;
+      const currentMinutes = task.actualMinutes || 0;
+      
+      // Add the new time to the current time
+      let totalMinutes = currentMinutes + newMinutes;
+      let totalHours = currentHours + newHours;
+      
+      // Convert excess minutes to hours
+      if (totalMinutes >= 60) {
+        totalHours += Math.floor(totalMinutes / 60);
+        totalMinutes %= 60;
+      }
+      
       // Convert both times to minutes for easy comparison
       const plannedTimeInMinutes = timeInMinutes(task.plannedHours, task.plannedMinutes);
-      const newTimeInMinutes = timeInMinutes(newHours, newMinutes);
+      const newTimeInMinutes = timeInMinutes(totalHours, totalMinutes);
       
       // Check if new time exceeds planned time
       if (newTimeInMinutes > plannedTimeInMinutes) {
@@ -45,8 +53,8 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
         return;
       }
       
-      // Update the time directly (not adding to previous time)
-      onUpdateActualTime(taskId, newHours, newMinutes);
+      // Update with accumulated time
+      onUpdateActualTime(taskId, totalHours, totalMinutes);
     }
     setActiveTaskId(null);
   };
