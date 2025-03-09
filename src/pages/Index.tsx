@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { Task } from "@/types";
 import TaskAllocation from "@/components/TaskAllocation";
 import TaskTracker from "@/components/TaskTracker";
 import TaskAnalysis from "@/components/TaskAnalysis";
 import TimeDisplay from "@/components/TimeDisplay";
+import DailyReminder from "@/components/DailyReminder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateActualTotalTime, calculateTotalTime, formatTime, saveTasksHistory } from "@/lib/timeUtils";
 import { Progress } from "@/components/ui/progress";
@@ -73,6 +73,13 @@ const Index = () => {
     toast.success(t("toast.dataCleared"));
   };
 
+  const handlePlanNow = () => {
+    setActiveTab("allocate");
+    if (tasks.length === 0) {
+      toast.info(t("dailyReminder.startPlanning"));
+    }
+  };
+
   const totalPlannedTime = calculateTotalTime(tasks);
   const totalActualTime = calculateActualTotalTime(tasks);
   
@@ -82,6 +89,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
+      <DailyReminder onPlanNow={handlePlanNow} />
+      
       <div className={`container mx-auto py-8 px-4 max-w-5xl ${language === 'ar' ? 'font-arabic' : ''}`}>
         <div className="flex justify-between mb-4 gap-2">
           <div className="flex gap-2">

@@ -76,23 +76,12 @@ export const validateTotalTime = (tasks: Task[]): boolean => {
   return (totalTime.hours < 24) || (totalTime.hours === 24 && totalTime.minutes === 0);
 };
 
-// New functions for analysis
-
-export const getStartOfWeek = (date: Date = new Date()): Date => {
-  const newDate = new Date(date);
-  const day = newDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const diff = newDate.getDate() - day; // adjust when day is Sunday
-  return new Date(newDate.setDate(diff));
-};
-
-export const getStartOfMonth = (date: Date = new Date()): Date => {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-};
-
-export const getStartOfDay = (date: Date = new Date()): Date => {
-  const newDate = new Date(date);
-  newDate.setHours(0, 0, 0, 0);
-  return newDate;
+export const isSameDay = (date1: Date, date2: Date): boolean => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
 };
 
 export const formatDate = (date: Date): string => {
@@ -195,4 +184,21 @@ export const getAnalyticsData = (period: AnalysisPeriod): TaskAnalytics[] => {
   
   // Sort by planned time (descending)
   return result.sort((a, b) => b.plannedMinutes - a.plannedMinutes);
+};
+
+export const getStartOfWeek = (date: Date = new Date()): Date => {
+  const newDate = new Date(date);
+  const day = newDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+  const diff = newDate.getDate() - day; // adjust when day is Sunday
+  return new Date(newDate.setDate(diff));
+};
+
+export const getStartOfMonth = (date: Date = new Date()): Date => {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+};
+
+export const getStartOfDay = (date: Date = new Date()): Date => {
+  const newDate = new Date(date);
+  newDate.setHours(0, 0, 0, 0);
+  return newDate;
 };
