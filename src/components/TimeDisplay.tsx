@@ -87,14 +87,16 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
         </div>
         <div className="text-sm">
           <span className="font-medium">{t("time.total")} </span>
-          <span>{language === "ar" ? `${toArabicDigits(24)}س ${toArabicDigits(0)}د` : "24h 00m"}</span>
+          <span>{formatTimeWithLocale(24, 0)}</span>
         </div>
       </div>
 
       <div className="flex flex-col gap-2 mt-4">
         <div className={`flex justify-between items-center ${isRtl ? 'flex-row-reverse' : ''}`}>
           <h3 className="font-medium text-sm">{t("time.completion")}</h3>
-          <span className="text-sm font-medium">{Math.round(completionPercentage)}%</span>
+          <span className="text-sm font-medium">
+            {language === "ar" ? toArabicDigits(Math.round(completionPercentage)) : Math.round(completionPercentage)}%
+          </span>
         </div>
         <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
           <div

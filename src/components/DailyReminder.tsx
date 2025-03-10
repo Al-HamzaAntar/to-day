@@ -18,7 +18,7 @@ interface DailyReminderProps {
 }
 
 const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [lastPromptDate, setLastPromptDate] = useState<string | null>(null);
 
@@ -47,6 +47,21 @@ const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
     setOpen(false);
   };
 
+  // Format the date according to the language
+  const getFormattedDate = () => {
+    const date = new Date();
+    if (language === 'ar') {
+      // For Arabic, use a more locale-appropriate date format
+      const options: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      };
+      return new Intl.DateTimeFormat('ar-SA', options).format(date);
+    }
+    return formatDate(date);
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-md">
@@ -63,7 +78,7 @@ const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
         <div className="py-6">
           <div className="flex flex-col items-center justify-center gap-2 text-center">
             <Clock className="h-16 w-16 text-primary/80" />
-            <h3 className="text-lg font-medium mt-2">{formatDate(new Date())}</h3>
+            <h3 className="text-lg font-medium mt-2">{getFormattedDate()}</h3>
             <p className="text-sm text-muted-foreground">
               {t("dailyReminder.prompt")}
             </p>

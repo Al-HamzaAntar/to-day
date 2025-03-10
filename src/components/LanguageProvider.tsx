@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type LanguageContextType = {
@@ -36,6 +37,7 @@ const translations = {
     "taskTracker.updateTime": "Update Time",
     "taskTracker.notTracked": "Not tracked",
     "taskTracker.exceedsPlannedTime": "Actual time cannot exceed planned time",
+    "taskTracker.noTasks": "No tasks to track. Start by planning your day.",
     
     "analysis.title": "Task Analysis",
     "analysis.day": "Day",
@@ -60,6 +62,13 @@ const translations = {
     "dashboard.planned": "planned",
     "dashboard.tracked": "tracked",
     "dashboard.completion": "Completion",
+    
+    "time.allocation": "Time Allocation",
+    "time.used": "Used:",
+    "time.remaining": "Remaining:",
+    "time.total": "Total:",
+    "time.completion": "Completion",
+    "time.breakdown": "Task Breakdown",
     
     "timeDisplay.planned": "Planned",
     "timeDisplay.tracked": "Tracked",
@@ -118,6 +127,7 @@ const translations = {
     "taskTracker.updateTime": "تحديث الوقت",
     "taskTracker.notTracked": "غير متتبع",
     "taskTracker.exceedsPlannedTime": "لا يمكن أن يتجاوز الوقت الفعلي الوقت المخطط له",
+    "taskTracker.noTasks": "لا توجد مهام للتتبع. ابدأ بتخطيط يومك.",
     
     "analysis.title": "تحليل المهام",
     "analysis.day": "يوم",
@@ -142,6 +152,13 @@ const translations = {
     "dashboard.planned": "مخطط",
     "dashboard.tracked": "متتبع",
     "dashboard.completion": "الإنجاز",
+    
+    "time.allocation": "توزيع الوقت",
+    "time.used": "المستخدم:",
+    "time.remaining": "المتبقي:",
+    "time.total": "المجموع:",
+    "time.completion": "الإنجاز",
+    "time.breakdown": "تفاصيل المهام",
     
     "timeDisplay.planned": "مخطط",
     "timeDisplay.tracked": "متتبع",
