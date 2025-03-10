@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { TimeUnit } from "@/types";
 import { useLanguage } from "../LanguageProvider";
+import { toLocaleDigits } from "@/lib/formatUtils";
 
 interface TimePickerProps {
   value: number;
@@ -27,6 +28,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
 }) => {
   const { language } = useLanguage();
   const [internalValue, setInternalValue] = useState<number>(value);
+  const isArabic = language === "ar";
 
   useEffect(() => {
     setInternalValue(value);
@@ -38,18 +40,10 @@ const TimePicker: React.FC<TimePickerProps> = ({
     onChange(numValue);
   };
 
-  // Convert western digits to Arabic digits
-  const toArabicDigits = (num: number): string => {
-    if (language !== "ar") return num.toString();
-    return num.toString().replace(/\d/g, d => 
-      String.fromCharCode(1632 + parseInt(d, 10))
-    );
-  };
-
   const getUnitLabel = (unit: TimeUnit, value: number) => {
-    const valueStr = toArabicDigits(value);
+    const valueStr = toLocaleDigits(value, isArabic);
     
-    if (language === "en") {
+    if (!isArabic) {
       return `${value} ${unit === "hours" ? (value === 1 ? "hour" : "hours") : (value === 1 ? "minute" : "minutes")}`;
     } else {
       // Arabic labels
@@ -67,10 +61,10 @@ const TimePicker: React.FC<TimePickerProps> = ({
         value={internalValue.toString()}
         onValueChange={handleChange}
         disabled={disabled}
-        dir={language === "ar" ? "rtl" : "ltr"}
+        dir={isArabic ? "rtl" : "ltr"}
       >
         <SelectTrigger className="w-full focus:ring-1 focus:ring-primary/20">
-          <SelectValue placeholder={`${language === "ar" ? toArabicDigits(0) : "0"} ${unit}`} />
+          <SelectValue placeholder={`${isArabic ? toLocaleDigits(0, true) : "0"} ${unit}`} />
         </SelectTrigger>
         <SelectContent className="max-h-[240px]">
           {Array.from({ length: max + 1 }, (_, i) => (

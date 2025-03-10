@@ -1,14 +1,7 @@
 
 import { Task } from "@/types";
 import { formatTime } from "./timeUtils";
-
-// Helper to convert numbers to Arabic digits if needed
-const toArabicDigits = (num: number | string, isArabic: boolean): string => {
-  if (!isArabic) return num.toString();
-  return num.toString().replace(/\d/g, d => 
-    String.fromCharCode(1632 + parseInt(d, 10))
-  );
-};
+import { toLocaleDigits } from "./formatUtils";
 
 // Function to export tasks data to CSV
 export const exportToCSV = (tasks: Task[]) => {
@@ -31,13 +24,13 @@ export const exportToCSV = (tasks: Task[]) => {
     // Calculate completion percentage
     const isCompleted = task.actualHours !== null && task.actualMinutes !== null;
     const completionStatus = isCompleted ? 
-      isArabic ? toArabicDigits("100%", isArabic) : "100%" : 
-      isArabic ? toArabicDigits("0%", isArabic) : "0%";
+      isArabic ? toLocaleDigits("100%", isArabic) : "100%" : 
+      isArabic ? toLocaleDigits("0%", isArabic) : "0%";
     
     return [
       task.name,
-      isArabic ? toArabicDigits(plannedTime, isArabic) : plannedTime,
-      isArabic ? (isCompleted ? toArabicDigits(actualTime, isArabic) : "غير متتبع") : actualTime,
+      isArabic ? toLocaleDigits(plannedTime, isArabic) : plannedTime,
+      isArabic ? (isCompleted ? toLocaleDigits(actualTime, isArabic) : "غير متتبع") : actualTime,
       completionStatus
     ];
   });
@@ -86,13 +79,13 @@ export const exportToExcel = (tasks: Task[]) => {
     // Calculate completion percentage
     const isCompleted = task.actualHours !== null && task.actualMinutes !== null;
     const completionStatus = isCompleted ? 
-      isArabic ? toArabicDigits("100%", isArabic) : "100%" : 
-      isArabic ? toArabicDigits("0%", isArabic) : "0%";
+      isArabic ? toLocaleDigits("100%", isArabic) : "100%" : 
+      isArabic ? toLocaleDigits("0%", isArabic) : "0%";
     
     return [
       task.name,
-      isArabic ? toArabicDigits(plannedTime, isArabic) : plannedTime,
-      isArabic ? (isCompleted ? toArabicDigits(actualTime, isArabic) : "غير متتبع") : actualTime,
+      isArabic ? toLocaleDigits(plannedTime, isArabic) : plannedTime,
+      isArabic ? (isCompleted ? toLocaleDigits(actualTime, isArabic) : "غير متتبع") : actualTime,
       completionStatus
     ];
   });

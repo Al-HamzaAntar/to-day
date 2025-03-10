@@ -37,7 +37,7 @@ const ExportButton = ({ tasks }: ExportButtonProps) => {
           {t("export.button")}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" dir={isRtl ? "rtl" : "ltr"}>
+      <DropdownMenuContent align="end" className={isRtl ? "rtl-content" : ""}>
         <DropdownMenuItem onClick={() => exportToExcel(tasks)}>
           <FileSpreadsheet className={`h-4 w-4 ${isRtl ? "ml-2" : "mr-2"}`} />
           <span>{t("export.excel")}</span>
