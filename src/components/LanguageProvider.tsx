@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type LanguageContextType = {
@@ -87,7 +86,12 @@ const translations = {
     "toast.error.zeroDuration": "Time must be greater than zero",
     "toast.error.exceed24": "Total planned time cannot exceed 24 hours",
     
+    "hourlyReminder.title": "Task Reminder",
+    "hourlyReminder.description": "Don't forget to track your tasks for this hour!",
+    
     "export.button": "Export",
+    "export.excel": "Excel (.xlsx)",
+    "export.csv": "CSV (.csv)",
     "export.title": "Export Data",
     "export.copy": "Copy to Clipboard",
     "export.download": "Download as JSON",
@@ -177,7 +181,12 @@ const translations = {
     "toast.error.zeroDuration": "يجب أن يكون الوقت أكبر من صفر",
     "toast.error.exceed24": "لا يمكن أن يتجاوز إجمالي الوقت المخطط له 24 ساعة",
     
+    "hourlyReminder.title": "تذكير بالمهام",
+    "hourlyReminder.description": "لا تنسى تتبع مهامك لهذه الساعة!",
+    
     "export.button": "تصدير",
+    "export.excel": "إكسل (.xlsx)",
+    "export.csv": "ملف CSV (.csv)",
     "export.title": "تصدير البيانات",
     "export.copy": "نسخ إلى الحافظة",
     "export.download": "تنزيل كـ JSON",

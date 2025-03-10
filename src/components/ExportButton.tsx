@@ -17,7 +17,8 @@ interface ExportButtonProps {
 }
 
 const ExportButton = ({ tasks }: ExportButtonProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const isRtl = language === 'ar';
   
   if (tasks.length === 0) {
     return null;
@@ -30,19 +31,20 @@ const ExportButton = ({ tasks }: ExportButtonProps) => {
           variant="outline" 
           size="sm" 
           className="gap-2"
+          dir={isRtl ? "rtl" : "ltr"}
         >
-          <Download className="h-4 w-4" />
-          {t("export.button") || "Export"}
+          <Download className={`h-4 w-4 ${isRtl ? "ml-1" : "mr-1"}`} />
+          {t("export.button")}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" dir={isRtl ? "rtl" : "ltr"}>
         <DropdownMenuItem onClick={() => exportToExcel(tasks)}>
-          <FileSpreadsheet className="h-4 w-4 mr-2" />
-          <span>{t("export.excel") || "Excel (.xlsx)"}</span>
+          <FileSpreadsheet className={`h-4 w-4 ${isRtl ? "ml-2" : "mr-2"}`} />
+          <span>{t("export.excel")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => exportToCSV(tasks)}>
-          <FileText className="h-4 w-4 mr-2" />
-          <span>{t("export.csv") || "CSV (.csv)"}</span>
+          <FileText className={`h-4 w-4 ${isRtl ? "ml-2" : "mr-2"}`} />
+          <span>{t("export.csv")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

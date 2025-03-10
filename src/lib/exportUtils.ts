@@ -2,26 +2,42 @@
 import { Task } from "@/types";
 import { formatTime } from "./timeUtils";
 
+// Helper to convert numbers to Arabic digits if needed
+const toArabicDigits = (num: number | string, isArabic: boolean): string => {
+  if (!isArabic) return num.toString();
+  return num.toString().replace(/\d/g, d => 
+    String.fromCharCode(1632 + parseInt(d, 10))
+  );
+};
+
 // Function to export tasks data to CSV
 export const exportToCSV = (tasks: Task[]) => {
-  // Create CSV headers
-  const headers = ["Task Name", "Planned Time", "Actual Time", "Completion %"];
+  // Detect language preference from localStorage
+  const currentLang = localStorage.getItem('app-language') || 'en';
+  const isArabic = currentLang === 'ar';
+  
+  // Set headers based on language
+  const headers = isArabic 
+    ? ["اسم المهمة", "الوقت المخطط", "الوقت الفعلي", "نسبة الإكمال %"]
+    : ["Task Name", "Planned Time", "Actual Time", "Completion %"];
   
   // Create rows for each task
   const rows = tasks.map(task => {
     const plannedTime = formatTime(task.plannedHours, task.plannedMinutes);
     const actualTime = task.actualHours !== null ? 
       formatTime(task.actualHours, task.actualMinutes || 0) : 
-      "Not tracked";
+      isArabic ? "غير متتبع" : "Not tracked";
     
     // Calculate completion percentage
     const isCompleted = task.actualHours !== null && task.actualMinutes !== null;
-    const completionStatus = isCompleted ? "100%" : "0%";
+    const completionStatus = isCompleted ? 
+      isArabic ? toArabicDigits("100%", isArabic) : "100%" : 
+      isArabic ? toArabicDigits("0%", isArabic) : "0%";
     
     return [
       task.name,
-      plannedTime,
-      actualTime,
+      isArabic ? toArabicDigits(plannedTime, isArabic) : plannedTime,
+      isArabic ? (isCompleted ? toArabicDigits(actualTime, isArabic) : "غير متتبع") : actualTime,
       completionStatus
     ];
   });
@@ -37,8 +53,11 @@ export const exportToCSV = (tasks: Task[]) => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   
+  const today = new Date().toISOString().split('T')[0];
+  const filename = isArabic ? `مهام_${today}.csv` : `tasks_export_${today}.csv`;
+  
   link.setAttribute('href', url);
-  link.setAttribute('download', `tasks_export_${new Date().toISOString().split('T')[0]}.csv`);
+  link.setAttribute('download', filename);
   link.style.visibility = 'hidden';
   
   document.body.appendChild(link);
@@ -48,26 +67,32 @@ export const exportToCSV = (tasks: Task[]) => {
 
 // Function to export tasks data to Excel (XLSX)
 export const exportToExcel = (tasks: Task[]) => {
-  // For Excel export, we'll use CSV format with .xlsx extension
-  // In a production app, you might want to use a proper Excel library
-  // Create CSV headers
-  const headers = ["Task Name", "Planned Time", "Actual Time", "Completion %"];
+  // Detect language preference from localStorage
+  const currentLang = localStorage.getItem('app-language') || 'en';
+  const isArabic = currentLang === 'ar';
+  
+  // Set headers based on language
+  const headers = isArabic 
+    ? ["اسم المهمة", "الوقت المخطط", "الوقت الفعلي", "نسبة الإكمال %"]
+    : ["Task Name", "Planned Time", "Actual Time", "Completion %"];
   
   // Create rows for each task
   const rows = tasks.map(task => {
     const plannedTime = formatTime(task.plannedHours, task.plannedMinutes);
     const actualTime = task.actualHours !== null ? 
       formatTime(task.actualHours, task.actualMinutes || 0) : 
-      "Not tracked";
+      isArabic ? "غير متتبع" : "Not tracked";
     
     // Calculate completion percentage
     const isCompleted = task.actualHours !== null && task.actualMinutes !== null;
-    const completionStatus = isCompleted ? "100%" : "0%";
+    const completionStatus = isCompleted ? 
+      isArabic ? toArabicDigits("100%", isArabic) : "100%" : 
+      isArabic ? toArabicDigits("0%", isArabic) : "0%";
     
     return [
       task.name,
-      plannedTime,
-      actualTime,
+      isArabic ? toArabicDigits(plannedTime, isArabic) : plannedTime,
+      isArabic ? (isCompleted ? toArabicDigits(actualTime, isArabic) : "غير متتبع") : actualTime,
       completionStatus
     ];
   });
@@ -83,8 +108,11 @@ export const exportToExcel = (tasks: Task[]) => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   
+  const today = new Date().toISOString().split('T')[0];
+  const filename = isArabic ? `مهام_${today}.xlsx` : `tasks_export_${today}.xlsx`;
+  
   link.setAttribute('href', url);
-  link.setAttribute('download', `tasks_export_${new Date().toISOString().split('T')[0]}.xlsx`);
+  link.setAttribute('download', filename);
   link.style.visibility = 'hidden';
   
   document.body.appendChild(link);

@@ -9,10 +9,11 @@ import {
   DialogTitle,
   DialogFooter 
 } from "@/components/ui/dialog";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, Bell } from "lucide-react";
 import { useLanguage } from "./LanguageProvider";
 import { formatDate } from "@/lib/timeUtils";
 import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface DailyReminderProps {
   onPlanNow: () => void;
@@ -20,10 +21,11 @@ interface DailyReminderProps {
 
 const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
   const { t, language } = useLanguage();
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
   const [open, setOpen] = useState(false);
   const [lastPromptDate, setLastPromptDate] = useState<string | null>(null);
   const [lastHourlyReminder, setLastHourlyReminder] = useState<number | null>(null);
+  const [notificationPermission, setNotificationPermission] = useState<string>('default');
 
   // Check if we need to show the daily reminder
   useEffect(() => {
@@ -37,12 +39,21 @@ const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
       setOpen(true);
     }
   }, []);
+
+  // Check notification permission on component mount
+  useEffect(() => {
+    if ('Notification' in window) {
+      setNotificationPermission(Notification.permission);
+    }
+  }, []);
   
   // Setup hourly reminder
   useEffect(() => {
-    // Check for permission first
-    if (Notification && Notification.permission !== "granted" && Notification.permission !== "denied") {
-      Notification.requestPermission();
+    // Request notification permission if not granted or denied
+    if ('Notification' in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission().then(permission => {
+        setNotificationPermission(permission);
+      });
     }
     
     // Function to show hourly reminder
@@ -58,14 +69,14 @@ const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
         setLastHourlyReminder(currentHour);
         
         // Show toast notification
-        toast({
-          title: t("hourlyReminder.title"),
+        toast(t("hourlyReminder.title"), {
           description: t("hourlyReminder.description"),
           duration: 10000, // 10 seconds
+          icon: <Bell className="h-5 w-5" />
         });
         
         // Try to show a system notification if permission is granted
-        if (Notification && Notification.permission === "granted") {
+        if ('Notification' in window && Notification.permission === "granted") {
           const notification = new Notification(t("hourlyReminder.title"), {
             body: t("hourlyReminder.description"),
             icon: '/favicon.ico'
@@ -97,7 +108,7 @@ const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
       clearInterval(intervalId);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [t, toast]);
+  }, [t]);
 
   const handlePlanNow = () => {
     const today = new Date().toISOString().split('T')[0];
@@ -126,9 +137,24 @@ const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
     return formatDate(date);
   };
 
+  const requestNotificationPermission = () => {
+    if ('Notification' in window) {
+      Notification.requestPermission().then(permission => {
+        setNotificationPermission(permission);
+        if (permission === 'granted') {
+          toast(t("hourlyReminder.permissionGranted"), {
+            description: t("hourlyReminder.notificationsEnabled"),
+          });
+        }
+      });
+    }
+  };
+
+  const isRtl = language === 'ar';
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" dir={isRtl ? "rtl" : "ltr"}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
@@ -146,10 +172,22 @@ const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
             <p className="text-sm text-muted-foreground">
               {t("dailyReminder.prompt")}
             </p>
+            
+            {notificationPermission !== 'granted' && notificationPermission !== 'denied' && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-2 flex items-center gap-2"
+                onClick={requestNotificationPermission}
+              >
+                <Bell className="h-4 w-4" />
+                {language === 'ar' ? 'تفعيل إشعارات التذكير' : 'Enable Reminder Notifications'}
+              </Button>
+            )}
           </div>
         </div>
 
-        <DialogFooter className="flex flex-col sm:flex-row gap-2">
+        <DialogFooter className={`flex flex-col sm:flex-row gap-2 ${isRtl ? 'sm:flex-row-reverse' : ''}`}>
           <Button
             variant="outline"
             onClick={handleRemindLater}
