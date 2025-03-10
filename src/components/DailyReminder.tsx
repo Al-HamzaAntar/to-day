@@ -12,6 +12,7 @@ import {
 import { Calendar, Clock } from "lucide-react";
 import { useLanguage } from "./LanguageProvider";
 import { formatDate } from "@/lib/timeUtils";
+import { useToast } from "@/hooks/use-toast";
 
 interface DailyReminderProps {
   onPlanNow: () => void;
@@ -19,10 +20,12 @@ interface DailyReminderProps {
 
 const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
   const { t, language } = useLanguage();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [lastPromptDate, setLastPromptDate] = useState<string | null>(null);
+  const [lastHourlyReminder, setLastHourlyReminder] = useState<number | null>(null);
 
-  // Check if we need to show the reminder
+  // Check if we need to show the daily reminder
   useEffect(() => {
     const storedLastPromptDate = localStorage.getItem('last-prompt-date');
     setLastPromptDate(storedLastPromptDate);
@@ -34,6 +37,67 @@ const DailyReminder: React.FC<DailyReminderProps> = ({ onPlanNow }) => {
       setOpen(true);
     }
   }, []);
+  
+  // Setup hourly reminder
+  useEffect(() => {
+    // Check for permission first
+    if (Notification && Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission();
+    }
+    
+    // Function to show hourly reminder
+    const checkHourlyReminder = () => {
+      const currentHour = new Date().getHours();
+      const storedLastHour = localStorage.getItem('last-hourly-reminder');
+      const lastHour = storedLastHour ? parseInt(storedLastHour, 10) : null;
+      
+      // Only show reminder if we're in a new hour and the app is in focus
+      if (lastHour !== currentHour && document.visibilityState === 'visible') {
+        // Update last hour in local storage
+        localStorage.setItem('last-hourly-reminder', currentHour.toString());
+        setLastHourlyReminder(currentHour);
+        
+        // Show toast notification
+        toast({
+          title: t("hourlyReminder.title"),
+          description: t("hourlyReminder.description"),
+          duration: 10000, // 10 seconds
+        });
+        
+        // Try to show a system notification if permission is granted
+        if (Notification && Notification.permission === "granted") {
+          const notification = new Notification(t("hourlyReminder.title"), {
+            body: t("hourlyReminder.description"),
+            icon: '/favicon.ico'
+          });
+          
+          notification.onclick = () => {
+            window.focus();
+            notification.close();
+          };
+        }
+      }
+    };
+
+    // Check immediately and then set up interval
+    checkHourlyReminder();
+    const intervalId = setInterval(checkHourlyReminder, 60000); // Check every minute
+    
+    // Visibility change check - to show reminder when user returns to tab
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkHourlyReminder();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Cleanup
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [t, toast]);
 
   const handlePlanNow = () => {
     const today = new Date().toISOString().split('T')[0];
