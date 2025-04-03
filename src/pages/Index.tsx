@@ -18,6 +18,7 @@ import { BarChart4, RefreshCw } from "lucide-react";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import ExportButton from "@/components/ExportButton";
 import { toLocaleDigits, formatTimeString } from "@/lib/formatUtils";
+import { HelpModal } from "@/components/HelpModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -130,6 +131,7 @@ const Index = () => {
             </AlertDialog>
             
             <ExportButton tasks={tasks} />
+            <HelpModal />
           </div>
           
           <div className="flex gap-2">
