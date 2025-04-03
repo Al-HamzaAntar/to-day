@@ -1,8 +1,14 @@
 import { Task, TimeAllocation, AnalysisPeriod, TaskAnalytics } from "../types";
+import { toLocaleDigits } from "./formatUtils";
 
-export const formatTime = (hours: number, minutes: number): string => {
+export const formatTime = (hours: number, minutes: number, isArabic: boolean = false): string => {
   const formattedHours = hours.toString();
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes.toString();
+  
+  if (isArabic) {
+    return `${toLocaleDigits(formattedHours, true)}س ${toLocaleDigits(formattedMinutes, true)}د`;
+  }
+  
   return `${formattedHours}h ${formattedMinutes}m`;
 };
 
@@ -78,7 +84,16 @@ export const isSameDay = (date1: Date, date2: Date): boolean => {
   );
 };
 
-export const formatDate = (date: Date): string => {
+export const formatDate = (date: Date, isArabic: boolean = false): string => {
+  if (isArabic) {
+    const formatter = new Intl.DateTimeFormat('ar-EG', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+    return formatter.format(date);
+  }
+  
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',

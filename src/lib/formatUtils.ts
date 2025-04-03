@@ -8,7 +8,8 @@
 export const toLocaleDigits = (num: number | string, isArabic: boolean): string => {
   if (!isArabic) return typeof num === 'string' ? num : num.toString();
   
-  return num.toString().replace(/\d/g, d => 
+  const str = typeof num === 'string' ? num : num.toString();
+  return str.replace(/[0-9]/g, d => 
     String.fromCharCode(1632 + parseInt(d, 10))
   );
 };

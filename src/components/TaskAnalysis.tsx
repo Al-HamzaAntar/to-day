@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   getAnalyticsData, 
@@ -14,6 +15,7 @@ import { PieChart, Pie, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Toolti
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "./LanguageProvider";
 import { ChartPie, BarChart4, Trophy, Clock, Calendar } from "lucide-react";
+import { toLocaleDigits } from "@/lib/formatUtils";
 
 const TaskAnalysis: React.FC = () => {
   const { t, language } = useLanguage();
@@ -22,18 +24,19 @@ const TaskAnalysis: React.FC = () => {
   
   const data = getAnalyticsData(period);
   const hasData = data.length > 0;
+  const isArabic = language === "ar";
   
   // Time period description
   const getPeriodDescription = () => {
     const now = new Date();
     if (period === "day") {
-      return formatDate(now);
+      return formatDate(now, isArabic);
     } else if (period === "week") {
       const start = getStartOfWeek();
-      return `${formatDate(start)} - ${formatDate(now)}`;
+      return `${formatDate(start, isArabic)} - ${formatDate(now, isArabic)}`;
     } else if (period === "month") {
       const start = getStartOfMonth();
-      return `${formatDate(start)} - ${formatDate(now)}`;
+      return `${formatDate(start, isArabic)} - ${formatDate(now, isArabic)}`;
     }
     return "";
   };
@@ -49,6 +52,20 @@ const TaskAnalysis: React.FC = () => {
     value: item.actualMinutes,
     color: `hsl(${data.indexOf(item) * 40}, 70%, 50%)`
   }));
+  
+  // Custom formatter for tooltip and labels that converts to Arabic digits when needed
+  const formatTimeWithLocale = (hours: number, minutes: number): string => {
+    return formatTime(hours, minutes, isArabic);
+  };
+
+  const formatPercentWithLocale = (value: number): string => {
+    return isArabic ? toLocaleDigits(Math.round(value).toString(), true) + "%" : Math.round(value) + "%";
+  };
+
+  // Custom label formatter for pie chart
+  const renderCustomizedLabel = ({ name, percent }: { name: string, percent: number }) => {
+    return `${name} ${formatPercentWithLocale(percent * 100)}`;
+  };
   
   // Get most efficient and inefficient tasks
   const mostEfficient = [...data].sort((a, b) => b.efficiency - a.efficiency)[0];
@@ -119,11 +136,11 @@ const TaskAnalysis: React.FC = () => {
                 <div className="flex items-baseline gap-2">
                   <Clock className="h-5 w-5 text-muted-foreground" />
                   <span className="text-2xl font-medium">
-                    {formatTime(Math.floor(totalActual / 60), totalActual % 60)}
+                    {formatTimeWithLocale(Math.floor(totalActual / 60), totalActual % 60)}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {t("analysis.of")} {formatTime(Math.floor(totalPlanned / 60), totalPlanned % 60)} {t("analysis.planned")}
+                  {t("analysis.of")} {formatTimeWithLocale(Math.floor(totalPlanned / 60), totalPlanned % 60)} {t("analysis.planned")}
                 </p>
               </CardContent>
             </Card>
@@ -141,7 +158,7 @@ const TaskAnalysis: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {Math.round(mostEfficient.efficiency)}% {t("analysis.efficient")}
+                    {formatPercentWithLocale(mostEfficient.efficiency)} {t("analysis.efficient")}
                   </p>
                 </CardContent>
               </Card>
@@ -160,7 +177,7 @@ const TaskAnalysis: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {Math.round(leastEfficient.efficiency)}% {t("analysis.efficient")}
+                    {formatPercentWithLocale(leastEfficient.efficiency)} {t("analysis.efficient")}
                   </p>
                 </CardContent>
               </Card>
@@ -180,13 +197,13 @@ const TaskAnalysis: React.FC = () => {
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={renderCustomizedLabel}
                     >
                       {pieData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => formatTime(Math.floor(Number(value) / 60), Number(value) % 60)} />
+                    <Tooltip formatter={(value) => formatTimeWithLocale(Math.floor(Number(value) / 60), Number(value) % 60)} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -202,8 +219,11 @@ const TaskAnalysis: React.FC = () => {
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis tickFormatter={(value) => `${Math.floor(value / 60)}h`} />
-                    <Tooltip formatter={(value) => formatTime(Math.floor(Number(value) / 60), Number(value) % 60)} />
+                    <YAxis tickFormatter={(value) => isArabic ? 
+                      `${toLocaleDigits(Math.floor(value / 60).toString(), true)}س` : 
+                      `${Math.floor(value / 60)}h`} 
+                    />
+                    <Tooltip formatter={(value) => formatTimeWithLocale(Math.floor(Number(value) / 60), Number(value) % 60)} />
                     <Legend />
                     <Bar dataKey="planned" name={t("analysis.planned")} fill="#8884d8" />
                     <Bar dataKey="actual" name={t("analysis.actual")} fill="#82ca9d" />
@@ -222,7 +242,7 @@ const TaskAnalysis: React.FC = () => {
                     <div className="flex justify-between items-center mb-2">
                       <h4 className="font-medium truncate" title={task.name}>{task.name}</h4>
                       <span className="text-sm bg-secondary px-2 py-1 rounded-full">
-                        {task.occurrences} {t("analysis.occurrences")}
+                        {isArabic ? toLocaleDigits(task.occurrences.toString(), true) : task.occurrences} {t("analysis.occurrences")}
                       </span>
                     </div>
                     
@@ -230,19 +250,19 @@ const TaskAnalysis: React.FC = () => {
                       <div>
                         <p className="text-sm text-muted-foreground">{t("analysis.planned")}</p>
                         <p className="font-medium">
-                          {formatTime(task.planned.hours, task.planned.minutes)}
+                          {formatTimeWithLocale(task.planned.hours, task.planned.minutes)}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">{t("analysis.actual")}</p>
                         <p className="font-medium">
-                          {formatTime(task.actual.hours, task.actual.minutes)}
+                          {formatTimeWithLocale(task.actual.hours, task.actual.minutes)}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">{t("analysis.efficiency")}</p>
                         <p className="font-medium">
-                          {Math.round(task.efficiency)}%
+                          {formatPercentWithLocale(task.efficiency)}
                         </p>
                       </div>
                     </div>
