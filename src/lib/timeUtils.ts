@@ -6,12 +6,6 @@ export const formatTime = (hours: number, minutes: number): string => {
   return `${formattedHours}h ${formattedMinutes}m`;
 };
 
-export const formatTimeArabic = (hours: number, minutes: number): string => {
-  const formattedHours = hours.toString();
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes.toString();
-  return `${formattedHours}س ${formattedMinutes}د`;
-};
-
 export const calculateTotalTime = (tasks: Task[]): TimeAllocation => {
   const totalMinutes = tasks.reduce((total, task) => {
     const taskMinutes = (task.plannedHours * 60) + (task.plannedMinutes || 0);

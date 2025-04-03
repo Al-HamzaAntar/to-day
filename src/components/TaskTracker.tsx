@@ -64,10 +64,14 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
 
   // Format time with appropriate locale digits and units
   const formatTimeWithLocale = (hours: number, minutes: number): string => {
+    const formattedHours = hours.toString();
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes.toString();
+    
     if (isArabic) {
-      return `${toLocaleDigits(hours, true)}س ${toLocaleDigits(minutes < 10 ? `0${minutes}` : minutes, true)}د`;
+      return `${toLocaleDigits(formattedHours, true)}س ${toLocaleDigits(formattedMinutes, true)}د`;
     }
-    return formatTime(hours, minutes);
+    
+    return `${formattedHours}h ${formattedMinutes}m`;
   };
 
   const isRtl = language === "ar";

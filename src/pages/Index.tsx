@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Task } from "@/types";
 import TaskAllocation from "@/components/TaskAllocation";
@@ -6,7 +7,7 @@ import TaskAnalysis from "@/components/TaskAnalysis";
 import TimeDisplay from "@/components/TimeDisplay";
 import DailyReminder from "@/components/DailyReminder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { calculateActualTotalTime, calculateTotalTime, formatTime, saveTasksHistory } from "@/lib/timeUtils";
+import { calculateActualTotalTime, calculateTotalTime, saveTasksHistory } from "@/lib/timeUtils";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { BarChart4, RefreshCw } from "lucide-react";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import ExportButton from "@/components/ExportButton";
+import { toLocaleDigits, formatTimeString } from "@/lib/formatUtils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +38,7 @@ const Index = () => {
   });
   
   const [activeTab, setActiveTab] = useState("allocate");
+  const isArabic = language === "ar";
 
   useEffect(() => {
     localStorage.setItem("today-tasks", JSON.stringify(tasks));
@@ -82,6 +85,18 @@ const Index = () => {
 
   const totalPlannedTime = calculateTotalTime(tasks);
   const totalActualTime = calculateActualTotalTime(tasks);
+  
+  // Format time with appropriate locale digits and units
+  const formatTimeWithLocale = (hours: number, minutes: number): string => {
+    const formattedHours = hours.toString();
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes.toString();
+    
+    if (isArabic) {
+      return `${toLocaleDigits(formattedHours, true)}س ${toLocaleDigits(formattedMinutes, true)}د`;
+    }
+    
+    return `${formattedHours}h ${formattedMinutes}m`;
+  };
   
   const trackedCount = tasks.filter(
     (task) => task.actualHours !== null && task.actualMinutes !== null
@@ -136,9 +151,9 @@ const Index = () => {
               <div className="space-y-1 flex-1">
                 <h3 className="text-sm font-medium">{t("dashboard.tasksPlanned")}</h3>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-medium">{tasks.length}</span>
+                  <span className="text-3xl font-medium">{isArabic ? toLocaleDigits(tasks.length, true) : tasks.length}</span>
                   <span className="text-muted-foreground text-sm">
-                    {formatTime(totalPlannedTime.hours, totalPlannedTime.minutes)} {t("dashboard.planned")}
+                    {formatTimeWithLocale(totalPlannedTime.hours, totalPlannedTime.minutes)} {t("dashboard.planned")}
                   </span>
                 </div>
               </div>
@@ -146,9 +161,9 @@ const Index = () => {
               <div className="space-y-1 flex-1">
                 <h3 className="text-sm font-medium">{t("dashboard.tasksTracked")}</h3>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-medium">{trackedCount}</span>
+                  <span className="text-3xl font-medium">{isArabic ? toLocaleDigits(trackedCount, true) : trackedCount}</span>
                   <span className="text-muted-foreground text-sm">
-                    {formatTime(totalActualTime.hours, totalActualTime.minutes)} {t("dashboard.tracked")}
+                    {formatTimeWithLocale(totalActualTime.hours, totalActualTime.minutes)} {t("dashboard.tracked")}
                   </span>
                 </div>
               </div>
@@ -158,7 +173,9 @@ const Index = () => {
                 <div className="flex items-center gap-3">
                   <Progress value={trackedCount / Math.max(1, tasks.length) * 100} className="h-2" />
                   <span className="text-sm font-medium">
-                    {Math.round(trackedCount / Math.max(1, tasks.length) * 100)}%
+                    {isArabic 
+                      ? toLocaleDigits(Math.round(trackedCount / Math.max(1, tasks.length) * 100), true) 
+                      : Math.round(trackedCount / Math.max(1, tasks.length) * 100)}%
                   </span>
                 </div>
               </div>

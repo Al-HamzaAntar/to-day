@@ -22,8 +22,10 @@ export const toLocaleDigits = (num: number | string, isArabic: boolean): string 
 export const formatTimeString = (timeStr: string, isArabic: boolean): string => {
   if (!isArabic) return timeStr;
   
-  // Replace hours and minutes format
-  return timeStr
+  // Replace hours and minutes format with Arabic digits and labels
+  const arabicTimeStr = timeStr
     .replace(/(\d+)h/g, (_, num) => `${toLocaleDigits(parseInt(num, 10), true)}س`)
     .replace(/(\d+)m/g, (_, num) => `${toLocaleDigits(parseInt(num, 10), true)}د`);
+    
+  return arabicTimeStr;
 };
