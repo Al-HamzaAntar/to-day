@@ -7,6 +7,7 @@ import { calculateRemainingTime, formatTime, timeInMinutes } from "@/lib/timeUti
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "./LanguageProvider";
 import { toast } from "sonner";
+import { toLocaleDigits, formatTimeString } from "@/lib/formatUtils";
 
 interface TaskTrackerProps {
   tasks: Task[];
@@ -59,18 +60,12 @@ const TaskTracker: React.FC<TaskTrackerProps> = ({ tasks, onUpdateActualTime }) 
     setActiveTaskId(null);
   };
 
-  const toArabicDigits = (num: number): string => {
-    if (language !== "ar") return num.toString();
-    return num.toString().replace(/\d/g, d => 
-      String.fromCharCode(1632 + parseInt(d, 10))
-    );
-  };
+  const isArabic = language === "ar";
 
+  // Format time with appropriate locale digits and units
   const formatTimeWithLocale = (hours: number, minutes: number): string => {
-    if (language === "ar") {
-      const arabicHours = toArabicDigits(hours);
-      const arabicMinutes = toArabicDigits(minutes < 10 ? `0${minutes}` : minutes);
-      return `${arabicHours}س ${arabicMinutes}د`;
+    if (isArabic) {
+      return `${toLocaleDigits(hours, true)}س ${toLocaleDigits(minutes < 10 ? `0${minutes}` : minutes, true)}د`;
     }
     return formatTime(hours, minutes);
   };

@@ -3,6 +3,7 @@ import React from "react";
 import { Task } from "@/types";
 import { calculateTotalTime, calculateActualTotalTime, formatTime } from "@/lib/timeUtils";
 import { useLanguage } from "./LanguageProvider";
+import { toLocaleDigits, formatTimeString } from "@/lib/formatUtils";
 
 interface TimeDisplayProps {
   tasks: Task[];
@@ -31,20 +32,12 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
     ? Math.min(100, (actualMinutesTotal / totalPlannedMinutes) * 100) 
     : 0;
 
-  // Convert western digits to Arabic digits
-  const toArabicDigits = (num: number): string => {
-    if (language !== "ar") return num.toString();
-    return num.toString().replace(/\d/g, d => 
-      String.fromCharCode(1632 + parseInt(d, 10))
-    );
-  };
+  const isArabic = language === "ar";
 
-  // Format time with Arabic numerals and units if needed
+  // Format time with appropriate locale digits and units
   const formatTimeWithLocale = (hours: number, minutes: number): string => {
-    if (language === "ar") {
-      const arabicHours = toArabicDigits(hours);
-      const arabicMinutes = toArabicDigits(minutes < 10 ? `0${minutes}` : minutes);
-      return `${arabicHours}س ${arabicMinutes}د`;
+    if (isArabic) {
+      return `${toLocaleDigits(hours, true)}س ${toLocaleDigits(minutes < 10 ? `0${minutes}` : minutes, true)}د`;
     }
     return formatTime(hours, minutes);
   };
@@ -95,7 +88,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ tasks }) => {
         <div className={`flex justify-between items-center ${isRtl ? 'flex-row-reverse' : ''}`}>
           <h3 className="font-medium text-sm">{t("time.completion")}</h3>
           <span className="text-sm font-medium">
-            {language === "ar" ? toArabicDigits(Math.round(completionPercentage)) : Math.round(completionPercentage)}%
+            {isArabic ? toLocaleDigits(Math.round(completionPercentage), true) : Math.round(completionPercentage)}%
           </span>
         </div>
         <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">

@@ -24,6 +24,6 @@ export const formatTimeString = (timeStr: string, isArabic: boolean): string => 
   
   // Replace hours and minutes format
   return timeStr
-    .replace(/(\d+)h/g, (_, num) => `${toLocaleDigits(num, true)}س`)
-    .replace(/(\d+)m/g, (_, num) => `${toLocaleDigits(num, true)}د`);
+    .replace(/(\d+)h/g, (_, num) => `${toLocaleDigits(parseInt(num, 10), true)}س`)
+    .replace(/(\d+)m/g, (_, num) => `${toLocaleDigits(parseInt(num, 10), true)}د`);
 };
