@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Task } from "@/types";
 import TaskAllocation from "@/components/TaskAllocation";
@@ -19,6 +18,7 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import ExportButton from "@/components/ExportButton";
 import { toLocaleDigits, formatTimeString } from "@/lib/formatUtils";
 import { HelpModal } from "@/components/HelpModal";
+import GettingStartedModal from "@/components/GettingStartedModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const Index = () => {
+  
   const { t, language } = useLanguage();
   const [tasks, setTasks] = useState<Task[]>(() => {
     const savedTasks = localStorage.getItem("today-tasks");
@@ -49,6 +50,8 @@ const Index = () => {
       saveTasksHistory(tasks);
     }
   }, [tasks]);
+
+  
 
   const handleAddTask = (task: Task) => {
     setTasks((prev) => [...prev, task]);
@@ -87,7 +90,8 @@ const Index = () => {
   const totalPlannedTime = calculateTotalTime(tasks);
   const totalActualTime = calculateActualTotalTime(tasks);
   
-  // Format time with appropriate locale digits and units
+  
+  
   const formatTimeWithLocale = (hours: number, minutes: number): string => {
     const formattedHours = hours.toString();
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes.toString();
@@ -106,6 +110,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
       <DailyReminder onPlanNow={handlePlanNow} />
+      <GettingStartedModal />
       
       <div className={`container mx-auto py-8 px-4 max-w-5xl ${language === 'ar' ? 'font-arabic' : ''}`}>
         <div className="flex justify-between mb-4 gap-2">
@@ -140,6 +145,8 @@ const Index = () => {
           </div>
         </div>
         
+        
+
         <div className="text-center mb-10 animate-slide-down">
           <h1 className="text-4xl font-bold tracking-tight">{t("app.title")}</h1>
           <p className="text-muted-foreground mt-2">
@@ -186,6 +193,8 @@ const Index = () => {
         )}
 
         {tasks.length > 0 && <TimeDisplay tasks={tasks} />}
+
+        
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full mb-6">

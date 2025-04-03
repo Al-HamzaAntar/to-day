@@ -13,8 +13,9 @@ import { HelpCircle } from "lucide-react";
 import HelpGuide from "./HelpGuide";
 
 export const HelpModal: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [open, setOpen] = React.useState(false);
+  const isArabic = language === "ar";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

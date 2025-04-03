@@ -33,18 +33,45 @@ const ExportButton = ({ tasks }: ExportButtonProps) => {
           className="gap-2"
           dir={isRtl ? "rtl" : "ltr"}
         >
-          <Download className={`h-4 w-4 ${isRtl ? "ml-1" : "mr-1"}`} />
-          {t("export.button")}
+          {isRtl ? (
+            <>
+              {t("export.button")}
+              <Download className="h-4 w-4 mr-1" />
+            </>
+          ) : (
+            <>
+              <Download className="h-4 w-4 mr-1" />
+              {t("export.button")}
+            </>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={isRtl ? "rtl-content" : ""}>
         <DropdownMenuItem onClick={() => exportToExcel(tasks)}>
-          <FileSpreadsheet className={`h-4 w-4 ${isRtl ? "ml-2" : "mr-2"}`} />
-          <span>{t("export.excel")}</span>
+          {isRtl ? (
+            <>
+              <span>{t("export.excel")}</span>
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+            </>
+          ) : (
+            <>
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              <span>{t("export.excel")}</span>
+            </>
+          )}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => exportToCSV(tasks)}>
-          <FileText className={`h-4 w-4 ${isRtl ? "ml-2" : "mr-2"}`} />
-          <span>{t("export.csv")}</span>
+          {isRtl ? (
+            <>
+              <span>{t("export.csv")}</span>
+              <FileText className="h-4 w-4 mr-2" />
+            </>
+          ) : (
+            <>
+              <FileText className="h-4 w-4 mr-2" />
+              <span>{t("export.csv")}</span>
+            </>
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
