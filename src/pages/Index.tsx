@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Task } from "@/types";
 import TaskAllocation from "@/components/TaskAllocation";
@@ -34,7 +35,7 @@ const Index = () => {
   
   const { t, language } = useLanguage();
   const [tasks, setTasks] = useState<Task[]>(() => {
-    const savedTasks = localStorage.getItem("today-tasks");
+    const savedTasks = localStorage.getItem("to-day-tasks");
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
   
@@ -42,7 +43,7 @@ const Index = () => {
   const isArabic = language === "ar";
 
   useEffect(() => {
-    localStorage.setItem("today-tasks", JSON.stringify(tasks));
+    localStorage.setItem("to-day-tasks", JSON.stringify(tasks));
     
     // Save tasks history if any task has actual time tracked
     if (tasks.some(task => task.actualHours !== null)) {
