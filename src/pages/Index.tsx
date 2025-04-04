@@ -51,8 +51,6 @@ const Index = () => {
     }
   }, [tasks]);
 
-  
-
   const handleAddTask = (task: Task) => {
     setTasks((prev) => [...prev, task]);
     toast.success(t("toast.taskAdded"));
@@ -90,8 +88,6 @@ const Index = () => {
   const totalPlannedTime = calculateTotalTime(tasks);
   const totalActualTime = calculateActualTotalTime(tasks);
   
-  
-  
   const formatTimeWithLocale = (hours: number, minutes: number): string => {
     const formattedHours = hours.toString();
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes.toString();
@@ -110,7 +106,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
       <DailyReminder onPlanNow={handlePlanNow} />
-      <GettingStartedModal />
       
       <div className={`container mx-auto py-8 px-4 max-w-5xl ${language === 'ar' ? 'font-arabic' : ''}`}>
         <div className="flex justify-between mb-4 gap-2">
@@ -137,6 +132,7 @@ const Index = () => {
             
             <ExportButton tasks={tasks} />
             <HelpModal />
+            <GettingStartedModal />
           </div>
           
           <div className="flex gap-2">

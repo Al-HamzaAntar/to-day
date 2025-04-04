@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import {
   Dialog,
@@ -14,36 +14,31 @@ import {
   CheckCircle2, 
   ClipboardList, 
   ClockIcon, 
-  BarChart4 
+  BarChart4,
+  HelpCircle
 } from "lucide-react";
 
 const GettingStartedModal: React.FC = () => {
   const { t, language } = useLanguage();
   const isArabic = language === "ar";
-  const [isFirstVisit, setIsFirstVisit] = useState(false);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    // Check if this is the user's first visit
-    const hasVisitedBefore = localStorage.getItem("has-visited-app");
-    
-    if (!hasVisitedBefore) {
-      setIsFirstVisit(true);
-      setOpen(true);
-    }
-  }, []);
 
   const handleClose = () => {
     setOpen(false);
-    localStorage.setItem("has-visited-app", "true");
   };
-
-  if (!isFirstVisit) {
-    return null;
-  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="rounded-full" 
+          aria-label={t("help.helpButton")}
+        >
+          <HelpCircle className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>{t("gettingStarted.title")}</DialogTitle>
@@ -135,10 +130,7 @@ const GettingStartedModal: React.FC = () => {
             </ScrollArea>
           </Tabs>
           
-          <div className="mt-6 flex justify-between">
-            <Button variant="outline" onClick={handleClose}>
-              {t("gettingStarted.skipGuide")}
-            </Button>
+          <div className="mt-6 flex justify-end">
             <Button onClick={handleClose}>
               {t("gettingStarted.getStarted")}
             </Button>
