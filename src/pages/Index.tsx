@@ -104,10 +104,13 @@ const Index = () => {
   ).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
+    <div 
+      className="min-h-screen bg-gradient-to-b from-background to-secondary/20" 
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       <DailyReminder onPlanNow={handlePlanNow} />
       
-      <div className={`container mx-auto py-8 px-4 max-w-5xl ${language === 'ar' ? 'font-arabic' : ''}`}>
+      <div className={`container mx-auto py-8 px-4 max-w-5xl ${isArabic ? 'font-arabic' : ''}`}>
         <div className="flex justify-between mb-4 gap-2">
           <div className="flex gap-2">
             <AlertDialog>
