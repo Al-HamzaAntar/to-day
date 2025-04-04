@@ -17,7 +17,6 @@ import { BarChart4, RefreshCw } from "lucide-react";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import ExportButton from "@/components/ExportButton";
 import { toLocaleDigits, formatTimeString } from "@/lib/formatUtils";
-import { HelpModal } from "@/components/HelpModal";
 import GettingStartedModal from "@/components/GettingStartedModal";
 import {
   AlertDialog,
@@ -131,7 +130,6 @@ const Index = () => {
             </AlertDialog>
             
             <ExportButton tasks={tasks} />
-            <HelpModal />
             <GettingStartedModal />
           </div>
           

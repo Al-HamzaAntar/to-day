@@ -16,13 +16,16 @@ import {
   ClipboardList, 
   ClockIcon, 
   BarChart4,
-  HelpCircle
+  HelpCircle,
+  BookOpen
 } from "lucide-react";
+import HelpGuide from "./HelpGuide";
 
 const GettingStartedModal: React.FC = () => {
   const { t, language } = useLanguage();
   const isArabic = language === "ar";
   const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("gettingStarted");
 
   const handleClose = () => {
     setOpen(false);
@@ -42,101 +45,120 @@ const GettingStartedModal: React.FC = () => {
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle>{t("gettingStarted.title")}</DialogTitle>
+          <DialogTitle>{activeTab === "gettingStarted" ? t("gettingStarted.title") : t("help.title")}</DialogTitle>
         </DialogHeader>
         
-        <div className={`${isArabic ? "font-arabic text-right" : ""}`}>
-          <div className="mb-6 space-y-2">
-            <p className="text-lg font-medium">{t("gettingStarted.welcome")}</p>
-            <p>{t("gettingStarted.intro")}</p>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="mb-4 w-full grid grid-cols-2">
+            <TabsTrigger value="gettingStarted" className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4" />
+              <span>{t("gettingStarted.title")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="help" className="flex items-center gap-2">
+              <HelpCircle className="h-4 w-4" />
+              <span>{t("help.title")}</span>
+            </TabsTrigger>
+          </TabsList>
           
-          <Tabs defaultValue="plan" className="w-full">
-            <TabsList className="mb-4 grid w-full grid-cols-3">
-              <TabsTrigger value="plan" className="flex items-center gap-2">
-                <ClipboardList className="h-4 w-4" />
-                <span>{t("gettingStarted.planTab")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="track" className="flex items-center gap-2">
-                <ClockIcon className="h-4 w-4" />
-                <span>{t("gettingStarted.trackTab")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="analyze" className="flex items-center gap-2">
-                <BarChart4 className="h-4 w-4" />
-                <span>{t("gettingStarted.analyzeTab")}</span>
-              </TabsTrigger>
-            </TabsList>
-            
-            <ScrollArea className="h-[400px] px-1">
-              <TabsContent value="plan" className="mt-0 space-y-4">
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h3 className="text-lg font-medium mb-2">{t("gettingStarted.planHeading")}</h3>
-                  <p>{t("gettingStarted.planDesc")}</p>
-                </div>
-                
-                <div className="space-y-3">
-                  <h4 className="font-medium">{t("gettingStarted.planStepsHeading")}</h4>
-                  <StepItem 
-                    icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                    description={t("gettingStarted.planStep1")}
-                  />
-                  <StepItem 
-                    icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                    description={t("gettingStarted.planStep2")}
-                  />
-                  <StepItem 
-                    icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                    description={t("gettingStarted.planStep3")}
-                  />
-                </div>
-              </TabsContent>
+          <TabsContent value="gettingStarted">
+            <div className={`${isArabic ? "font-arabic text-right" : ""}`}>
+              <div className="mb-6 space-y-2">
+                <p className="text-lg font-medium">{t("gettingStarted.welcome")}</p>
+                <p>{t("gettingStarted.intro")}</p>
+              </div>
               
-              <TabsContent value="track" className="mt-0 space-y-4">
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h3 className="text-lg font-medium mb-2">{t("gettingStarted.trackHeading")}</h3>
-                  <p>{t("gettingStarted.trackDesc")}</p>
-                </div>
+              <Tabs defaultValue="plan" className="w-full">
+                <TabsList className="mb-4 grid w-full grid-cols-3">
+                  <TabsTrigger value="plan" className="flex items-center gap-2">
+                    <ClipboardList className="h-4 w-4" />
+                    <span>{t("gettingStarted.planTab")}</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="track" className="flex items-center gap-2">
+                    <ClockIcon className="h-4 w-4" />
+                    <span>{t("gettingStarted.trackTab")}</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="analyze" className="flex items-center gap-2">
+                    <BarChart4 className="h-4 w-4" />
+                    <span>{t("gettingStarted.analyzeTab")}</span>
+                  </TabsTrigger>
+                </TabsList>
                 
-                <div className="space-y-3">
-                  <h4 className="font-medium">{t("gettingStarted.trackStepsHeading")}</h4>
-                  <StepItem 
-                    icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                    description={t("gettingStarted.trackStep1")}
-                  />
-                  <StepItem 
-                    icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                    description={t("gettingStarted.trackStep2")}
-                  />
-                </div>
-              </TabsContent>
+                <ScrollArea className="h-[400px] px-1">
+                  <TabsContent value="plan" className="mt-0 space-y-4">
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <h3 className="text-lg font-medium mb-2">{t("gettingStarted.planHeading")}</h3>
+                      <p>{t("gettingStarted.planDesc")}</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-medium">{t("gettingStarted.planStepsHeading")}</h4>
+                      <StepItem 
+                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
+                        description={t("gettingStarted.planStep1")}
+                      />
+                      <StepItem 
+                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
+                        description={t("gettingStarted.planStep2")}
+                      />
+                      <StepItem 
+                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
+                        description={t("gettingStarted.planStep3")}
+                      />
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="track" className="mt-0 space-y-4">
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <h3 className="text-lg font-medium mb-2">{t("gettingStarted.trackHeading")}</h3>
+                      <p>{t("gettingStarted.trackDesc")}</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-medium">{t("gettingStarted.trackStepsHeading")}</h4>
+                      <StepItem 
+                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
+                        description={t("gettingStarted.trackStep1")}
+                      />
+                      <StepItem 
+                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
+                        description={t("gettingStarted.trackStep2")}
+                      />
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="analyze" className="mt-0 space-y-4">
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <h3 className="text-lg font-medium mb-2">{t("gettingStarted.analyzeHeading")}</h3>
+                      <p>{t("gettingStarted.analyzeDesc")}</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-medium">{t("gettingStarted.analyzeStepsHeading")}</h4>
+                      <StepItem 
+                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
+                        description={t("gettingStarted.analyzeStep1")}
+                      />
+                      <StepItem 
+                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
+                        description={t("gettingStarted.analyzeStep2")}
+                      />
+                    </div>
+                  </TabsContent>
+                </ScrollArea>
+              </Tabs>
               
-              <TabsContent value="analyze" className="mt-0 space-y-4">
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h3 className="text-lg font-medium mb-2">{t("gettingStarted.analyzeHeading")}</h3>
-                  <p>{t("gettingStarted.analyzeDesc")}</p>
-                </div>
-                
-                <div className="space-y-3">
-                  <h4 className="font-medium">{t("gettingStarted.analyzeStepsHeading")}</h4>
-                  <StepItem 
-                    icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                    description={t("gettingStarted.analyzeStep1")}
-                  />
-                  <StepItem 
-                    icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                    description={t("gettingStarted.analyzeStep2")}
-                  />
-                </div>
-              </TabsContent>
-            </ScrollArea>
-          </Tabs>
+              <div className="mt-6 flex justify-end">
+                <Button onClick={handleClose}>
+                  {t("gettingStarted.getStarted")}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
           
-          <div className="mt-6 flex justify-end">
-            <Button onClick={handleClose}>
-              {t("gettingStarted.getStarted")}
-            </Button>
-          </div>
-        </div>
+          <TabsContent value="help">
+            <HelpGuide onClose={() => setOpen(false)} />
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
