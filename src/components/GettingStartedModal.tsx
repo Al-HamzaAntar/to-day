@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CheckCircle2, ClipboardList, ClockIcon, BarChart4, HelpCircle, BookOpen } from "lucide-react";
 import HelpGuide from "./HelpGuide";
+
 const GettingStartedModal: React.FC = () => {
   const {
     t,
@@ -25,7 +26,9 @@ const GettingStartedModal: React.FC = () => {
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="px-0 text-left">{activeTab === "gettingStarted" ? t("gettingStarted.title") : t("help.title")}</DialogTitle>
+          <DialogTitle className={`px-0 ${isArabic ? 'text-right' : 'text-left'}`}>
+            {activeTab === "gettingStarted" ? t("gettingStarted.title") : t("help.title")}
+          </DialogTitle>
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
