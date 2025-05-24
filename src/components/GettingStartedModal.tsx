@@ -25,7 +25,7 @@ const GettingStartedModal: React.FC = () => {
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="px-0 text-right">{activeTab === "gettingStarted" ? t("gettingStarted.title") : t("help.title")}</DialogTitle>
+          <DialogTitle className="px-0 text-left">{activeTab === "gettingStarted" ? t("gettingStarted.title") : t("help.title")}</DialogTitle>
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
