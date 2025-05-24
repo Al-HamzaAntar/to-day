@@ -1,51 +1,31 @@
-
 import React, { useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  CheckCircle2, 
-  ClipboardList, 
-  ClockIcon, 
-  BarChart4,
-  HelpCircle,
-  BookOpen
-} from "lucide-react";
+import { CheckCircle2, ClipboardList, ClockIcon, BarChart4, HelpCircle, BookOpen } from "lucide-react";
 import HelpGuide from "./HelpGuide";
-
 const GettingStartedModal: React.FC = () => {
-  const { t, language } = useLanguage();
+  const {
+    t,
+    language
+  } = useLanguage();
   const isArabic = language === "ar";
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("gettingStarted");
-
   const handleClose = () => {
     setOpen(false);
   };
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
+  return <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="rounded-full" 
-          aria-label={t("help.helpButton")}
-        >
+        <Button variant="outline" size="icon" className="rounded-full" aria-label={t("help.helpButton")}>
           <HelpCircle className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle>{activeTab === "gettingStarted" ? t("gettingStarted.title") : t("help.title")}</DialogTitle>
+          <DialogTitle className="px-0 text-right">{activeTab === "gettingStarted" ? t("gettingStarted.title") : t("help.title")}</DialogTitle>
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -92,18 +72,9 @@ const GettingStartedModal: React.FC = () => {
                     
                     <div className="space-y-3">
                       <h4 className="font-medium">{t("gettingStarted.planStepsHeading")}</h4>
-                      <StepItem 
-                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                        description={t("gettingStarted.planStep1")}
-                      />
-                      <StepItem 
-                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                        description={t("gettingStarted.planStep2")}
-                      />
-                      <StepItem 
-                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                        description={t("gettingStarted.planStep3")}
-                      />
+                      <StepItem icon={<CheckCircle2 className="h-5 w-5 text-primary" />} description={t("gettingStarted.planStep1")} />
+                      <StepItem icon={<CheckCircle2 className="h-5 w-5 text-primary" />} description={t("gettingStarted.planStep2")} />
+                      <StepItem icon={<CheckCircle2 className="h-5 w-5 text-primary" />} description={t("gettingStarted.planStep3")} />
                     </div>
                   </TabsContent>
                   
@@ -115,14 +86,8 @@ const GettingStartedModal: React.FC = () => {
                     
                     <div className="space-y-3">
                       <h4 className="font-medium">{t("gettingStarted.trackStepsHeading")}</h4>
-                      <StepItem 
-                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                        description={t("gettingStarted.trackStep1")}
-                      />
-                      <StepItem 
-                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                        description={t("gettingStarted.trackStep2")}
-                      />
+                      <StepItem icon={<CheckCircle2 className="h-5 w-5 text-primary" />} description={t("gettingStarted.trackStep1")} />
+                      <StepItem icon={<CheckCircle2 className="h-5 w-5 text-primary" />} description={t("gettingStarted.trackStep2")} />
                     </div>
                   </TabsContent>
                   
@@ -134,14 +99,8 @@ const GettingStartedModal: React.FC = () => {
                     
                     <div className="space-y-3">
                       <h4 className="font-medium">{t("gettingStarted.analyzeStepsHeading")}</h4>
-                      <StepItem 
-                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                        description={t("gettingStarted.analyzeStep1")}
-                      />
-                      <StepItem 
-                        icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                        description={t("gettingStarted.analyzeStep2")}
-                      />
+                      <StepItem icon={<CheckCircle2 className="h-5 w-5 text-primary" />} description={t("gettingStarted.analyzeStep1")} />
+                      <StepItem icon={<CheckCircle2 className="h-5 w-5 text-primary" />} description={t("gettingStarted.analyzeStep2")} />
                     </div>
                   </TabsContent>
                 </ScrollArea>
@@ -160,20 +119,18 @@ const GettingStartedModal: React.FC = () => {
           </TabsContent>
         </Tabs>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
-const StepItem: React.FC<{ icon: React.ReactNode; description: string }> = ({
+const StepItem: React.FC<{
+  icon: React.ReactNode;
+  description: string;
+}> = ({
   icon,
-  description,
+  description
 }) => {
-  return (
-    <div className="flex items-start gap-3">
+  return <div className="flex items-start gap-3">
       <div className="flex-shrink-0 mt-1">{icon}</div>
       <div>{description}</div>
-    </div>
-  );
+    </div>;
 };
-
 export default GettingStartedModal;
